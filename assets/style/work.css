@@ -1,112 +1,122 @@
 /* Website Made by Bence (bencebarens.nl) */
 
-#work main{
+/* Algemene layout */
+#work main {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2em;
+    padding-bottom: 5em;
 }
 
-#work main > section {
+#work main section {
     width: fit-content;
 }
 
-#work main > section:first-of-type{
+#work main section:first-of-type {
     text-align: center;
-    margin-top: 70vh;
+    margin-top: 40vh;
     padding: 1em;
     z-index: 1;
-    background-color: rgba(255,255,255,0.8);
-    backdrop-filter: blur(10px);
 }
 
-#work main > #portfolio {
-    position: absolute;
-    width: calc(100% - 10em);
-    height: calc(100vh - 5em);
-    padding-top: 5em;
-    overflow: hidden;
+#work main section:first-of-type p{
+    font-size: 1.1em;
+}
 
+#work main section:first-of-type img{
+    width: 20em;
+    filter: drop-shadow(0 0 0.5em rgba(0,0,0,0.3));
+}
+
+/* Portfolio viewport */
+#work main #portfolio {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    overflow-x: hidden;
+    padding-top: 5em;
     perspective: 1200px;
 }
 
-
-/* De draaiende camera */
+/* 3D camera */
 #carousel-camera {
+    margin-top: -20em;
     width: 100%;
     height: 100%;
-
     transform-style: preserve-3d;
-
-    animation: rotate-gallery 40s linear infinite;
     pointer-events: none;
 }
 
-
-/* De 3D ruimte */
-#photo-grid {
+#carousel-stage {
     position: relative;
-
     width: 100%;
     height: 100%;
+    transform-style: preserve-3d;
+    /* Zet de animatie terug aan. Dit loopt nu 100% vloeiend */
+    animation: rotate-gallery 45s linear infinite;
+    will-change: transform;
+}
 
-    padding: 0;
+@keyframes rotate-gallery {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(-360deg); } /* Negatief draait natuurlijk mee */
+}
+
+/* Individuele ringen */
+.ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     margin: 0;
+    padding: 0;
     list-style: none;
-
     transform-style: preserve-3d;
     pointer-events: none;
 }
 
-
-/* Draaiing */
-@keyframes rotate-gallery {
-    from {
-        transform: rotateY(0deg);
-    }
-
-    to {
-        transform: rotateY(360deg);
-    }
-}
-
-
-#photo-grid li {
+.ring li {
     position: absolute;
-
-    left: calc(50% - 2.5em);
-    top: calc(50% - 2.5em);
-
-    width: 5em;
-
+    left: 50%;
+    top: 50%;
+    width: min-content;
     display: flex;
     flex-direction: column;
     align-items: center;
-
     transform-style: preserve-3d;
-
-    /*
-      Negatieve radius = achter de camera
-    */
-    transform:
-        rotateY(calc(var(--i) * var(--angle)))
-        translateZ(calc(var(--radius) * -1));
-
+    transform: 
+        translateX(-50%) 
+        translateY(var(--row-offset)) 
+        rotateY(calc(var(--slot) * var(--angle))) 
+        translateZ(calc(-1 * var(--radius)));
     backface-visibility: hidden;
+    contain: layout paint;
+}
 
+.ring li,
+.ring li * {
     pointer-events: auto;
 }
 
-
-#photo-grid img {
-    width: 5em;
-    height: 5em;
+.ring img, .ring video {
+    /* Formaat wordt nu door JS bepaald */
+    max-width: var(--item-width, 150px);
+    max-height: var(--item-height, 150px);
     object-fit: contain;
+    display: block;
 }
 
-
-#photo-grid .photo-title {
-    font-size: 0.7rem;
+.ring .photo-title {
+    margin-top: .25em;
+    max-width: 100%;
+    font-size: .7rem;
     word-break: break-word;
-    text-align: center;
+    backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #carousel-stage {
+        animation: none;
+    }
 }
