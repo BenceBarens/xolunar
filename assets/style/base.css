@@ -29,8 +29,6 @@ body, main{
     --color-primary: #ffffff;
     --color-secondary: #111111;
     --color-accent: #ff0000;
-
-    --cursor-normal: url("data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='32'><circle%20cx='16'%20cy='16'%20r='8'%20stroke='%23ff0000'%20stroke-width='2'%20fill='%23000'%20fill-opacity='0'/></svg>") 16 16, auto;
 }
 
 *::selection {
