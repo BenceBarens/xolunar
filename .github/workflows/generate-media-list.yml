@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'assets/img/Photo/**'
+      - '.github/workflows/generate-media-list.yml'
   workflow_dispatch:
 
 permissions:
@@ -22,7 +23,7 @@ jobs:
         run: |
           cd assets/img/Photo
           
-          echo "[" > ../../../../media.json
+          echo "[" > ../../../media.json
           first=true
 
           find . -mindepth 1 -maxdepth 2 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" \) | while read -r file; do
@@ -31,12 +32,12 @@ jobs:
             if [ "$first" = true ]; then
               first=false
             else
-              echo "," >> ../../../../media.json
+              echo "," >> ../../../media.json
             fi
-            echo "  \"$clean_path\"" >> ../../../../media.json
+            echo "  \"$clean_path\"" >> ../../../media.json
           done
           
-          echo "]" >> ../../../../media.json
+          echo "]" >> ../../../media.json
 
       - name: Commit and push JSON
         run: |

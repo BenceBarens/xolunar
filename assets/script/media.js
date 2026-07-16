@@ -14,7 +14,7 @@ async function loadPhotos() {
       const img = document.createElement('img');
       const span = document.createElement('span');
 
-      const rawGithubUrl = `https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/img/Photo/Photos/${relativeFilePath}`;
+      const rawGithubUrl = `https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/img/Photo/${relativeFilePath}`;
 
       img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawGithubUrl)}&w=${imageWidth}&output=${imageFormat}&q=${imageQuality}`;
       
