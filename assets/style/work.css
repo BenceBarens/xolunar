@@ -55,14 +55,3 @@
   font-size: 0.7rem;
   word-break: break-word;
 }
-
-#work footer{
-    position: fixed;
-    right: 1em;
-    bottom: 1em;
-    text-align: right;
-}
-
-#work footer p{
-    margin: 0;
-}
