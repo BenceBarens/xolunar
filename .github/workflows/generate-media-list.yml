@@ -20,7 +20,7 @@ jobs:
 
       - name: Generate JSON list
         run: |
-          cd assets/img/Photo/Photos
+          cd assets/img/Photo
           
           echo "[" > ../../../../media.json
           first=true
