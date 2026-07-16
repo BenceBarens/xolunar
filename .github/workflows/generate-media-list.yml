@@ -1,0 +1,41 @@
+name: Generate Media List
+
+on:
+  push:
+    paths:
+      - 'assets/img/Photo/Photos/**'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate JSON list
+        run: |
+          cd assets/img/Photo/Photos
+          echo "[" > ../../../../media.json
+          first=true
+          # Loop alleen door veelvoorkomende afbeeldingstypen (jpg, jpeg, png, webp, gif)
+          for file in *; do
+            if [[ -f "$file" && "$file" =~ \.(jpg|jpeg|png|webp|gif|JPG|JPEG|PNG|WEBP|GIF)$ ]]; then
+              if [ "$first" = true ]; then
+                first=false
+              else
+                echo "," >> ../../../../media.json
+              fi
+              echo "  \"$file\"" >> ../../../../media.json
+            fi
+          done
+          echo "]" >> ../../../../media.json
+
+      - name: Commit and push JSON
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add media.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update photos list" && git push)
