@@ -34,6 +34,7 @@ async function loadStreamCounter() {
 
 function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
   
+  // Berekent de actuele stand op basis van de exacte verstreken tijd
   function getCurrentStreams() {
     const now = Date.now();
     const msPassed = Math.max(0, now - lastUpdatedTime);
@@ -41,31 +42,39 @@ function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
     return Math.floor(baseStreams + extraStreams);
   }
 
-  let currentDisplayValue = getCurrentStreams();
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  animateCounter(element, currentDisplayValue, 1000, () => {
-    
-    function tick() {
-      const realTimeTarget = getCurrentStreams();
-
-      if (currentDisplayValue < realTimeTarget) {
-        const step = Math.min(
-          Math.floor(Math.random() * 3) + 1, 
-          realTimeTarget - currentDisplayValue
-        );
-        currentDisplayValue += step;
-        element.textContent = currentDisplayValue.toLocaleString('nl-NL');
-      }
-
-      const minDelay = AVG_MS_BETWEEN_STREAMS * 0.2;
-      const maxDelay = AVG_MS_BETWEEN_STREAMS * 1.9;
-      const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
-
-      setTimeout(tick, randomDelay);
+    if (prefersReducedMotion) {
+            const staticValue = getCurrentStreams();
+            element.textContent = staticValue.toLocaleString('nl-NL');
+            console.log("Reduced motion actief: beginanimatie en live-getik overgeslagen.");
+            return;
     }
 
-    tick();
-  });
+    let currentDisplayValue = getCurrentStreams();
+
+    animateCounter(element, currentDisplayValue, 1500, () => {
+        function tick() {
+        const realTimeTarget = getCurrentStreams();
+
+        if (currentDisplayValue < realTimeTarget) {
+            const step = Math.min(
+            Math.floor(Math.random() * 3) + 1, 
+            realTimeTarget - currentDisplayValue
+            );
+            currentDisplayValue += step;
+            element.textContent = currentDisplayValue.toLocaleString('nl-NL');
+        }
+
+        const minDelay = AVG_MS_BETWEEN_STREAMS * 0.2;
+        const maxDelay = AVG_MS_BETWEEN_STREAMS * 1.9;
+        const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
+
+        setTimeout(tick, randomDelay);
+        }
+
+        tick();
+    });
 }
 
 function animateCounter(element, target, duration, onComplete) {
