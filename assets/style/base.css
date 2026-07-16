@@ -36,6 +36,10 @@ body, main{
     background-color: var(--color-accent);
 }
 
+*:focus-visible {
+    outline: 2px solid var(--color-accent);
+}
+
 @media (prefers-color-scheme: dark) {
     :root{
         --color-primary: #111111;
