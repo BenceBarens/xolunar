@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'assets/img/Photo/Photos/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,22 +16,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Generate JSON list
+      - name: Generate JSON list (Recursive)
         run: |
+          # Ga naar de hoofdmap van je foto's
           cd assets/img/Photo/Photos
+          
           echo "[" > ../../../../media.json
           first=true
-          # Loop alleen door veelvoorkomende afbeeldingstypen (jpg, jpeg, png, webp, gif)
-          for file in *; do
-            if [[ -f "$file" && "$file" =~ \.(jpg|jpeg|png|webp|gif|JPG|JPEG|PNG|WEBP|GIF)$ ]]; then
-              if [ "$first" = true ]; then
-                first=false
-              else
-                echo "," >> ../../../../media.json
-              fi
-              echo "  \"$file\"" >> ../../../../media.json
+          
+          find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" \) | while read -r file; do
+            # Haal de './' weg die 'find' voor de bestanden zet (bijv. ./Vakantie/foto.jpg -> Vakantie/foto.jpg)
+            clean_path=$(echo "$file" | sed 's|^\./||')
+            
+            if [ "$first" = true ]; then
+              first=false
+            else
+              echo "," >> ../../../../media.json
             fi
+            # Schrijf het schone relatieve pad naar de JSON
+            echo "  \"$clean_path\"" >> ../../../../media.json
           done
+          
           echo "]" >> ../../../../media.json
 
       - name: Commit and push JSON
@@ -38,4 +44,4 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add media.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update photos list" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update nested photos list" && git push)
