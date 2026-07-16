@@ -36,6 +36,10 @@ body, main{
     background-color: var(--color-accent);
 }
 
+*:focus-visible {
+    outline: 2px solid var(--color-accent);
+}
+
 @media (prefers-color-scheme: dark) {
     :root{
         --color-primary: #111111;
@@ -171,16 +175,4 @@ body > a:first-child:focus{
     color: var(--color-primary);
     padding: 0.5rem;
     z-index: 1000;
-}
-
-/* Nav */
-
-nav ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-nav a{
-    text-decoration: none;
 }
