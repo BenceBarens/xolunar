@@ -5,7 +5,7 @@ async function loadPhotos() {
     const photoFiles = await response.json();
     const listContainer = document.getElementById('photo-grid');
 
-    const imageWidth = 200;       // Maximale breedte in pixels
+    const imageWidth = 100;       // Maximale breedte in pixels
     const imageQuality = 50;      // Kwaliteit (tussen 1 en 100)
     const imageFormat = 'webp';   // Output formaat (webp, png, jpg)
 
