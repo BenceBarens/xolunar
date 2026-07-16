@@ -3,7 +3,7 @@ name: Generate Media List
 on:
   push:
     paths:
-      - 'assets/img/Photo/Photos/**'
+      - 'assets/img/Photo/**'
   workflow_dispatch:
 
 permissions:
@@ -25,7 +25,6 @@ jobs:
           first=true
           
           find . -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" \) | while read -r file; do
-            # Haal de './' weg die 'find' voor de bestanden zet (bijv. ./Vakantie/foto.jpg -> Vakantie/foto.jpg)
             clean_path=$(echo "$file" | sed 's|^\./||')
             
             if [ "$first" = true ]; then
