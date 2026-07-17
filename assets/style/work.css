@@ -5,33 +5,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#work main > div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 2em;
-    padding-bottom: 5em;
-}
-
-#work main section {
-    width: fit-content;
-}
-
-#work main section:first-of-type {
-    text-align: center;
+    padding: 0 1em 5em 1em;
     margin-top: 40vh;
-    padding: 1em;
+    position: relative;
     z-index: 1;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), var(--color-primary) 40%);
 }
 
-#work main section:first-of-type p{
+#work main div section:first-of-type {
+    text-align: center;
+}
+
+#work main div section:first-of-type p{
     font-size: 1.1em;
 }
 
-#work main section:first-of-type img{
+#work main div section:first-of-type img{
     width: 20em;
     filter: drop-shadow(0 0 0.5em rgba(0,0,0,0.3));
 }
 
 /* Portfolio viewport */
 #work main #portfolio {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100vh;
     overflow-x: hidden;
@@ -54,7 +57,7 @@
     height: 100%;
     transform-style: preserve-3d;
     /* Zet de animatie terug aan. Dit loopt nu 100% vloeiend */
-    animation: rotate-gallery 45s linear infinite;
+    animation: rotate-gallery 60s linear infinite;
     will-change: transform;
 }
 
@@ -94,6 +97,15 @@
     contain: layout paint;
 }
 
+.ring li:hover{
+    transform: 
+        translateX(-50%) 
+        translateY(var(--row-offset)) 
+        rotateY(calc(var(--slot) * var(--angle))) 
+        translateZ(calc(-1 * var(--radius)))
+        scale(1.1);
+}
+
 .ring li,
 .ring li * {
     pointer-events: auto;
@@ -113,6 +125,15 @@
     font-size: .7rem;
     word-break: break-word;
     backface-visibility: hidden;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ring li:hover .photo-title{
+    color: var(--color-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
