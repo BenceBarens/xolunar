@@ -17,6 +17,7 @@ header nav ul{
     flex-direction: column;
     margin: 0;
     padding: 0;
+    position: absolute;
 }
 
 header nav a{
