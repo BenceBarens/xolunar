@@ -176,6 +176,7 @@ function openLightbox(file) {
         video.autoplay = true;
         video.playsInline = true;
         video.muted = false;
+        video.loop = true;
 
         lightboxMedia.appendChild(video);
     } else {
@@ -185,7 +186,6 @@ function openLightbox(file) {
         lightboxMedia.appendChild(img);
     }
 
-    // NATIVE HTML5 FUNCTIE: Opent de dialog met de backdrop!
     lightbox.showModal();
 }
 

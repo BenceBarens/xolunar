@@ -1,3 +1,29 @@
+// Website Made by Bence (bencebarens.nl)
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// SPLASH SCREEN ////////////////////////////////////////////////////////////////
+
+document.addEventListener('DOMContentLoaded', () => {
+    const splash = document.getElementById('splash-screen');
+
+    // if (sessionStorage.getItem('splashShown')) {
+    //     splash.style.display = 'none';
+    //     return;
+    // }
+
+    setTimeout(() => {
+        splash.classList.add('hidden');
+        
+        setTimeout(() => {
+            splash.style.display = 'none';
+            sessionStorage.setItem('splashShown', 'true');
+        }, 500);
+    }, 2500);
+});
+
+// VIEW COUNTER /////////////////////////////////////////////////////////////////
+
 const ESTIMATED_DAILY_GROWTH = 50000; 
 
 const STREAMS_PER_MS = ESTIMATED_DAILY_GROWTH / (24 * 60 * 60 * 1000);
@@ -41,8 +67,6 @@ function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
     const extraStreams = msPassed * STREAMS_PER_MS;
     return Math.floor(baseStreams + extraStreams);
   }
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
             const staticValue = getCurrentStreams();
@@ -98,3 +122,42 @@ function animateCounter(element, target, duration, onComplete) {
 }
 
 document.addEventListener('DOMContentLoaded', loadStreamCounter);
+
+// SCRAMBLER ///////////////////////////////////////////////////////////////////
+
+if (!prefersReducedMotion) {
+    document.addEventListener("DOMContentLoaded", () => {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
+    
+    const scramble = (element) => {
+        const originalText = element.innerText;
+        let iteration = 0;
+        
+        const interval = setInterval(() => {
+        element.innerText = originalText
+            .split("")
+            .map((letter, index) => {
+            if (index < iteration) return originalText[index];
+            return characters[Math.floor(Math.random() * characters.length)];
+            })
+            .join("");
+        
+        if (iteration >= originalText.length) clearInterval(interval);
+        iteration += 1.5;
+        }, 50);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            scramble(entry.target);
+            observer.unobserve(entry.target);
+        }
+        });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6, #splash-screen p').forEach(heading => {
+        observer.observe(heading);
+    });
+    });
+}
