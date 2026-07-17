@@ -136,3 +136,19 @@ window.addEventListener('resize', () => {
 });
 
 loadMedia();
+
+const portfolioSection = document.querySelector('#portfolio');
+
+window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const fadeOutDistance = 350; 
+    
+    let progress = scrolled / fadeOutDistance;
+    progress = Math.max(0, Math.min(1, progress));
+    
+    let newOpacity = 1 - progress;
+    let newTranslateY = progress * -10; 
+    
+    portfolioSection.style.opacity = newOpacity;
+    portfolioSection.style.transform = `translateY(${newTranslateY}em)`;
+});

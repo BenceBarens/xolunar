@@ -16,7 +16,6 @@
     margin-top: 40vh;
     position: relative;
     z-index: 1;
-    background-image: linear-gradient(rgba(255, 255, 255, 0), var(--color-primary) 40%);
 }
 
 #work main div section:first-of-type {
