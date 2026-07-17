@@ -1,6 +1,28 @@
 /* Website Made by Bence (bencebarens.nl) */
 
 /* Header */
+@media (min-width: 1000px) {
+    header nav{
+        position: fixed;
+        left: 1em;
+        z-index: 2;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+header nav ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+header nav a{
+    text-decoration: none;
+}
+
 header p{
     position: fixed;
     top: 1em;
@@ -17,34 +39,21 @@ header p span{
     padding: 0 0.2em;
 }
 
-header nav{
-    position: fixed;
-    left: 1em;
-    z-index: 2;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-header nav ul{
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-}
-
-header nav a{
-    text-decoration: none;
-}
-
 footer{
-    position: fixed;
-    right: 1em;
-    bottom: 1em;
-    z-index: 2;
-    text-align: right;
+    padding: 1em;
+    text-align: center;
+}
+
+@media (min-width: 1000px) {
+    footer{
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        text-align: right;
+    }
 }
 
 footer p{
-    margin: 0;
+    margin: 0 auto;
 }

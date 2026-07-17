@@ -34,6 +34,11 @@ body, main{
 *::selection {
     color: var(--color-primary);
     background-color: var(--color-accent);
+    text-shadow: white 0 0 0.2em;
+}
+
+*{
+    outline: 2px solid rgba(255, 34, 34, 0);
 }
 
 *:focus-visible {
