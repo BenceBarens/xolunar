@@ -20,8 +20,18 @@ header nav ul{
     position: absolute;
 }
 
+header nav li{
+    width: max-content;
+}
+
 header nav a{
     text-decoration: none;
+}
+
+header nav .selectedPage:after{
+    content: "●";
+    color: var(--color-accent);
+    margin-left: 0.4em;
 }
 
 header p{
@@ -81,11 +91,16 @@ footer p{
     overflow: hidden;
     width: 100vw;
     height: 100vh;
+    animation: splashFadeOut 0.5s cubic-bezier(.45,0,1,.1) forwards;
+    animation-delay: 3s;
 }
 
 #splash-screen p{
     font-size: 4em;
     transform: scaleY(3);
+    opacity: 0;
+    animation: splashFadeIn 0s linear forwards;
+    animation-delay: 0.5s;
 }
 
 #splash-screen.hidden {
@@ -98,12 +113,15 @@ footer p{
     width: 12em;
     height: 5em;
     position: absolute;
+    opacity: 0;
     top: 50%;
     left: 50%;
     transform: translate(calc(-50% + 5em), -50%);
     animation: 
-        frameSwoop 1.5s cubic-bezier(0,1,0,1) forwards, frameSwoopBack 0.5s cubic-bezier(.45,-0.1,1,.1) forwards;
-        animation-delay: 0s, 2s;
+        frameSwoop 1.5s cubic-bezier(0,1,0,1) forwards, 
+        splashFadeIn 0s linear forwards,
+        frameSwoopBack 0.5s cubic-bezier(.45,-0.1,1,.1) forwards;
+    animation-delay: 1s, 1s, 3s;
 }
 
 #splash-screen div:nth-last-of-type(1){
@@ -132,10 +150,19 @@ footer p{
     height: 83em;
 }
 
+@keyframes splashFadeIn {
+    to { opacity: 1; }
+}
+
 @keyframes frameSwoop {
     from { width: 150em; height: 143em; }
 }
 
 @keyframes frameSwoopBack {
     to { width: 150em; height: 143em; }
+}
+
+@keyframes splashFadeOut {
+    70% { opacity: 1; transform: scale(1.5); }
+    100% { opacity: 0; transform: scale(3); }
 }
