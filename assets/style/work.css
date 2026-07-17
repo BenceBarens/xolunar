@@ -7,28 +7,13 @@
     align-items: center;
 }
 
-#work main > div{
+#work main{
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2em;
     padding: 0 1em 5em 1em;
-    margin-top: 40vh;
-    position: relative;
     z-index: 1;
-}
-
-#work main div section:first-of-type {
-    text-align: center;
-}
-
-#work main div section:first-of-type p{
-    font-size: 1.1em;
-}
-
-#work main div section:first-of-type img{
-    width: 20em;
-    filter: drop-shadow(0 0 0.5em rgba(0,0,0,0.3));
 }
 
 /* Portfolio viewport */
@@ -145,12 +130,27 @@
     }
 }
 
+#work main section:nth-of-type(2){
+    text-align: center;
+    margin-top: 40vh;
+}
+
+#work main section:nth-of-type(2) p{
+    font-size: 1.1em;
+}
+
+#work main section:nth-of-type(2) img{
+    width: 20em;
+    filter: drop-shadow(0 0 0.5em rgba(0,0,0,0.3));
+}
+
 #lightbox {
     border: none;
     background: transparent;
-    padding: 0;
+    padding: 1em;
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
 }
 
 /* De donkere achtergrond over de hele site */
@@ -182,14 +182,15 @@
 
 #lightbox-media img,
 #lightbox-media video {
-    max-width: 90vw;
-    max-height: 70vh;
+    max-width: 80vw;
+    max-height: 60vh;
     object-fit: contain;
 }
 
 #lightbox-title {
     margin-top: 1.5em;
     text-align: center;
+    max-width: 100%;
 }
 
 #lightbox-close {
@@ -198,7 +199,7 @@
     right: 0.5em;
     background: none;
     border: none;
-    font-size: 4em;
+    font-size: 3em;
     font-weight: 200;
     line-height: 1;
     transition: transform 0.2s ease, color 0.2s ease;
@@ -207,12 +208,6 @@
 
 #lightbox-close:hover {
     color: var(--color-accent);
-}
-
-@media (max-width: 1000px){
-    #lightbox-close {
-        display: none;
-    }
 }
 
 #carousel-stage.paused {

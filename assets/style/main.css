@@ -65,4 +65,77 @@ footer{
 
 footer p{
     margin: 0 auto;
+    font-size: 0.8em;
+}
+
+/* SPLASH SCREEN //////////////////////////////////////////////// */
+
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 900;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+#splash-screen p{
+    font-size: 4em;
+    transform: scaleY(3);
+}
+
+#splash-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#splash-screen div{
+    border: 0.3em solid var(--color-accent);
+    width: 12em;
+    height: 5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(calc(-50% + 5em), -50%);
+    animation: 
+        frameSwoop 1.5s cubic-bezier(0,1,0,1) forwards, frameSwoopBack 0.5s cubic-bezier(.45,-0.1,1,.1) forwards;
+        animation-delay: 0s, 2s;
+}
+
+#splash-screen div:nth-last-of-type(1){
+    width: 12em;
+    height: 5em;
+    z-index: 910;
+}
+
+#splash-screen div:nth-last-of-type(2){
+    width: 17em;
+    height: 10em;
+}
+
+#splash-screen div:nth-last-of-type(3){
+    width: 30em;
+    height: 23em;
+}
+
+#splash-screen div:nth-last-of-type(4){
+    width: 60em;
+    height: 53em;
+}
+
+#splash-screen div:nth-last-of-type(5){
+    width: 90em;
+    height: 83em;
+}
+
+@keyframes frameSwoop {
+    from { width: 150em; height: 143em; }
+}
+
+@keyframes frameSwoopBack {
+    to { width: 150em; height: 143em; }
 }
