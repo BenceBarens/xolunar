@@ -15,7 +15,7 @@ function getLayoutSettings() {
     const width = window.innerWidth;
     
     if (width < 600) {
-        return { id: 'mobile', rings: 4, slotsPerRing: 16, ringSpacing: 180, itemWidth: 100, itemHeight: 120 };
+        return { id: 'mobile', rings: 3, slotsPerRing: 16, ringSpacing: 180, itemWidth: 100, itemHeight: 120 };
     } else if (width < 900) {
         return { id: 'tablet', rings: 3, slotsPerRing: 16, ringSpacing: 240, itemWidth: 140, itemHeight: 160 };
     } else if (width < 1600) {
@@ -99,6 +99,9 @@ function setupCarousel() {
                 mediaElement.alt = `Portfolio: ${file}`;
             }
 
+            li.style.cursor = 'pointer'; 
+            li.addEventListener('click', () => openLightbox(file));
+
             const title = document.createElement('span');
             title.className = 'photo-title';
             title.textContent = file.split('/').pop().split('?')[0]; 
@@ -151,4 +154,54 @@ window.addEventListener('scroll', () => {
     
     portfolioSection.style.opacity = newOpacity;
     portfolioSection.style.transform = `translateY(${newTranslateY}em)`;
+});
+
+const lightbox = document.querySelector('#lightbox');
+const lightboxMedia = document.querySelector('#lightbox-media');
+const lightboxTitle = document.querySelector('#lightbox-title');
+const lightboxClose = document.querySelector('#lightbox-close');
+const carouselStage = document.querySelector('#carousel-stage');
+
+function openLightbox(file) {
+    carouselStage.classList.add('paused');
+    lightboxMedia.innerHTML = '';
+    lightboxTitle.textContent = file.split('/').pop().split('?')[0];
+
+    if (file.startsWith('http')) {
+        const highResUrl = file.replace(/w_\d+,h_\d+,c_[a-z]+,/, 'w_800,q_auto,f_auto/');
+        
+        const video = document.createElement('video');
+        video.src = highResUrl;
+        video.controls = false; 
+        video.autoplay = true;
+        video.playsInline = true;
+        video.muted = false;
+
+        lightboxMedia.appendChild(video);
+    } else {
+        const img = document.createElement('img');
+        const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
+        img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=800&output=${GLOBAL_SETTINGS.imageFormat}&q=80`;
+        lightboxMedia.appendChild(img);
+    }
+
+    // NATIVE HTML5 FUNCTIE: Opent de dialog met de backdrop!
+    lightbox.showModal();
+}
+
+function closeLightbox() {
+    lightbox.close();
+}
+
+lightbox.addEventListener('close', () => {
+    carouselStage.classList.remove('paused');
+    lightboxMedia.innerHTML = '';
+});
+
+lightboxClose.addEventListener('click', closeLightbox);
+
+lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+        closeLightbox();
+    }
 });

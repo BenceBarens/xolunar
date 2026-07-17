@@ -144,3 +144,77 @@
         animation-duration: 500s;
     }
 }
+
+#lightbox {
+    border: none;
+    background: transparent;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* De donkere achtergrond over de hele site */
+#lightbox::backdrop {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Zodra hij geopend wordt via JavaScript ([open] attribuut) */
+#lightbox[open] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#lightbox-media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#lightbox-media img,
+#lightbox-media video {
+    max-width: 90vw;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+#lightbox-title {
+    margin-top: 1.5em;
+    text-align: center;
+}
+
+#lightbox-close {
+    position: fixed;
+    top: 0.5em;
+    right: 0.5em;
+    background: none;
+    border: none;
+    font-size: 4em;
+    font-weight: 200;
+    line-height: 1;
+    transition: transform 0.2s ease, color 0.2s ease;
+    z-index: 10;
+}
+
+#lightbox-close:hover {
+    color: var(--color-accent);
+}
+
+@media (max-width: 1000px){
+    #lightbox-close {
+        display: none;
+    }
+}
+
+#carousel-stage.paused {
+    animation-play-state: paused;
+}
