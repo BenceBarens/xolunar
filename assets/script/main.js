@@ -58,8 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // VIEW COUNTER /////////////////////////////////////////////////////////////////
 
-const ESTIMATED_DAILY_GROWTH = 50000; 
+const ESTIMATED_DAILY_GROWTH = 185500; 
 const STREAMS_PER_MS = ESTIMATED_DAILY_GROWTH / (24 * 60 * 60 * 1000);
+const AVG_MS_BETWEEN_STREAMS = (24 * 60 * 60 * 1000) / ESTIMATED_DAILY_GROWTH;
 
 async function loadStreamCounter() {
     const counterElement = document.querySelector('#counter');
@@ -75,22 +76,42 @@ async function loadStreamCounter() {
 
         if (!baseStreams || isNaN(lastUpdatedTime)) throw new Error("Ongeldige data in JSON");
 
-        // Start de simpele interval update
-        function updateDisplay() {
-            const now = Date.now();
-            const msPassed = Math.max(0, now - lastUpdatedTime);
-            const currentTotal = Math.floor(baseStreams + (msPassed * STREAMS_PER_MS));
-            counterElement.textContent = currentTotal.toLocaleString('nl-NL');
-        }
-
-        updateDisplay(); // Eerste keer direct tonen
-        setInterval(updateDisplay, 3000); // Update elke 3 seconden
+        startRealtimeTicking(counterElement, baseStreams, lastUpdatedTime);
 
     } catch (error) {
         console.error("Kon de realtime streamcount niet laden:", error);
         const wrapper = document.querySelector('#counter-wrapper');
         if (wrapper) wrapper.remove();
     }
+}
+
+function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
+    function getCurrentStreams() {
+        const now = Date.now();
+        const msPassed = Math.max(0, now - lastUpdatedTime);
+        const extraStreams = msPassed * STREAMS_PER_MS;
+        return Math.floor(baseStreams + extraStreams);
+    }
+
+    if (prefersReducedMotion) {
+        element.textContent = getCurrentStreams().toLocaleString('nl-NL');
+        return;
+    }
+
+    let currentDisplayValue = getCurrentStreams();
+    element.textContent = currentDisplayValue.toLocaleString('nl-NL');
+
+    function tick() {
+        const realTimeTarget = getCurrentStreams();
+        if (currentDisplayValue < realTimeTarget) {
+            const step = Math.min(Math.floor(Math.random() * 10) + 1, realTimeTarget - currentDisplayValue);
+            currentDisplayValue += step;
+            element.textContent = currentDisplayValue.toLocaleString('nl-NL');
+        }
+        const randomDelay = Math.random() * (AVG_MS_BETWEEN_STREAMS * 3 - AVG_MS_BETWEEN_STREAMS * 0.2) + (AVG_MS_BETWEEN_STREAMS * 0.2);
+        setTimeout(tick, randomDelay);
+    }
+    tick();
 }
 
 document.addEventListener('DOMContentLoaded', loadStreamCounter);
@@ -106,7 +127,7 @@ if (!prefersReducedMotion) {
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.2 });
+        }, { threshold: 0.5 });
 
         document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
             observer.observe(heading);
