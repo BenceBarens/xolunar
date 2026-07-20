@@ -140,6 +140,11 @@ main{
     animation-delay: 3s;
 }
 
+#splash-screen *{
+    cursor: wait;
+    touch-action: none;
+}
+
 #splash-screen p{
     font-size: 4em;
     transform: scaleY(3);
