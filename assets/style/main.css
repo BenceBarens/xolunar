@@ -1,54 +1,38 @@
 /* Website Made by Bence (bencebarens.nl) */
 
-/* Header */
-@media (min-width: 1000px) {
-    header nav{
-        position: fixed;
-        left: 1em;
-        z-index: 50;
-        top: 50%;
-        transform: translateY(-50%);
-    }
+/* Header & footer */
+header nav{
+    z-index: 50;
+    position: fixed;
+    top: 0;
 }
 
 header nav ul{
     list-style: none;
     display: flex;
-    flex-direction: column;
     margin: 0;
     padding: 0;
-    position: absolute;
-}
-
-header nav li{
-    width: max-content;
 }
 
 header nav a{
     text-decoration: none;
 }
 
-header nav .selectedPage:after{
-    content: "●";
-    color: var(--color-accent);
-    margin-left: 0.4em;
-}
-
 header p{
-    position: absolute;
     top: 1em;
     margin: 0;
-    padding: 0 1em;
+    padding: 0 0.5em;
     left: 50%;
     transform: translateX(-50%);
     z-index: 50;
     text-align: center;
     width: max-content;
     max-width: 100%;
+    background-color: var(--color-primary);
 }
 
 header p span{
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace; 
     letter-spacing: -0.1em;
     padding: 0 0.2em;
 }
@@ -58,7 +42,34 @@ footer{
     text-align: center;
 }
 
+footer p{
+    margin: 0 auto;
+    font-size: 0.8em;
+}
+
 @media (min-width: 1000px) {
+    header nav{
+        left: 1em;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    header nav ul{
+        flex-direction: column;
+    }
+
+    header nav li{
+        background-color: var(--color-primary);
+        width: max-content;
+        padding: 0 0.2em;
+    }
+
+    header nav a[aria-current="page"]:after{
+        content: "●";
+        color: var(--color-accent);
+        margin-left: 0.4em;
+    }
+
     header p{
         position: fixed;
     }
@@ -73,9 +84,43 @@ footer{
     }
 }
 
-footer p{
-    margin: 0 auto;
-    font-size: 0.8em;
+@media (max-width: 1000px) {
+    header nav{
+        width: 100%;
+        background-color: var(--color-primary);
+        border-bottom: 0.1em solid var(--color-accent);
+    }
+
+    header nav ul{
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    header nav li{
+        width: 100%;
+        position: relative;
+        text-align: center;
+    }
+
+    header nav li a{
+        display: inline-block;
+        padding: 0.5em;
+        position: relative;
+    }
+
+    header nav li:has(a[aria-current="page"]){
+        border-bottom: 0.1em solid var(--color-accent);
+    }
+
+    header p{
+        position: absolute;
+        top: 3em;
+        z-index: 40;
+    }
+}
+
+main{
+    padding-top: 4em;
 }
 
 /* SPLASH SCREEN //////////////////////////////////////////////// */
