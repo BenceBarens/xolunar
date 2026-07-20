@@ -19,12 +19,8 @@ header nav a{
 }
 
 header p{
-    top: 1em;
-    margin: 0;
+    margin: 0 auto;
     padding: 0 0.5em;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 50;
     text-align: center;
     width: max-content;
     max-width: 100%;
@@ -72,6 +68,10 @@ footer p{
 
     header p{
         position: fixed;
+        top: 1em;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
     }
 
     footer{
@@ -113,14 +113,13 @@ footer p{
     }
 
     header p{
-        position: absolute;
-        top: 3em;
-        z-index: 40;
+        margin-top: 3em;
     }
 }
 
 main{
-    padding-top: 4em;
+    padding: 2em 1em;
+    min-height: 90vh;
 }
 
 /* SPLASH SCREEN //////////////////////////////////////////////// */
