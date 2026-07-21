@@ -23,8 +23,8 @@ function scramble(element, reverse = false) {
             .join("");
         
         if (iteration >= originalText.length) clearInterval(interval);
-        iteration += 1.5;
-    }, 50);
+        iteration += 3;
+    }, 80);
 }
 
 // SPLASH SCREEN ////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ if (!prefersReducedMotion) {
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.5 });
+        }, { threshold: 0.1 });
 
         document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
             observer.observe(heading);
