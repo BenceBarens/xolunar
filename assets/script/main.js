@@ -58,16 +58,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // VIEW COUNTER /////////////////////////////////////////////////////////////////
 
-const ESTIMATED_DAILY_GROWTH = 185500; 
-const STREAMS_PER_MS = ESTIMATED_DAILY_GROWTH / (24 * 60 * 60 * 1000);
-const AVG_MS_BETWEEN_STREAMS = (24 * 60 * 60 * 1000) / ESTIMATED_DAILY_GROWTH;
+const DAILY_GROWTH_FACTOR = 1.000688224363364;
 
 async function loadStreamCounter() {
     const counterElement = document.querySelector('#counter');
     if (!counterElement) return;
 
     try {
-        const response = await fetch('https://bencebarens.github.io/xolunar/total-streams.json');
+        const response = await fetch('https://gist.githubusercontent.com/BenceBarens/365bee95e010c8002d93ed1fd440839a/raw/total-streams.json');
         if (!response.ok) throw new Error(`HTTP fout! Status: ${response.status}`);
 
         const data = await response.json();
@@ -86,12 +84,19 @@ async function loadStreamCounter() {
 }
 
 function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
+    const estimatedDailyGrowth = baseStreams * (DAILY_GROWTH_FACTOR - 1);
+
+    const streamsPerMs = estimatedDailyGrowth / (24 * 60 * 60 * 1000);
+    const avgMsBetweenStreams = (24 * 60 * 60 * 1000) / (estimatedDailyGrowth || 1);
+
     function getCurrentStreams() {
         const now = Date.now();
         const msPassed = Math.max(0, now - lastUpdatedTime);
-        const extraStreams = msPassed * STREAMS_PER_MS;
+        const extraStreams = msPassed * streamsPerMs;
         return Math.floor(baseStreams + extraStreams);
     }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
         element.textContent = getCurrentStreams().toLocaleString('nl-NL');
@@ -108,9 +113,14 @@ function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
             currentDisplayValue += step;
             element.textContent = currentDisplayValue.toLocaleString('nl-NL');
         }
-        const randomDelay = Math.random() * (AVG_MS_BETWEEN_STREAMS * 3 - AVG_MS_BETWEEN_STREAMS * 0.2) + (AVG_MS_BETWEEN_STREAMS * 0.2);
+        
+        const minDelay = avgMsBetweenStreams * 0.1;
+        const maxDelay = avgMsBetweenStreams * 2;
+        const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
+
         setTimeout(tick, randomDelay);
     }
+    
     tick();
 }
 
