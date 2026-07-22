@@ -5,7 +5,7 @@ const GLOBAL_SETTINGS = {
     videosUrl: './videos.json',
     imageQuality: 60,
     imageFormat: 'webp',
-    githubBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/img/Photo/'
+    githubBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/Photo/'
 };
 
 let mediaItems = [];

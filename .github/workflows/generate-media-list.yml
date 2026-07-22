@@ -3,7 +3,7 @@ name: Generate Media List
 on:
   push:
     paths:
-      - 'assets/img/Photo/**'
+      - 'assets/media/Photo/**'
       - '.github/workflows/generate-media-list.yml'
   workflow_dispatch:
 
@@ -21,7 +21,7 @@ jobs:
 
       - name: Generate JSON list
         run: |
-          cd assets/img/Photo
+          cd assets/media/Photo
           
           echo "[" > ../../../media.json
           first=true
