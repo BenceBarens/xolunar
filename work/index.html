@@ -41,7 +41,27 @@
         <section>
             <h1>Portfolio</h1>
             <p>XOLunar works for a lot of high-profile clients, many of which under an NDA. For a more extensive look into the full portfolio of XOLunar, you can reach out.</p>
-            <p>Current clients include Sony, Atlantic and Warner.</p>
+            <p>Past clients include Sony, Atlantic and Warner.</p>
+        </section>
+        <div role="tablist" aria-label="Portfolio secties" class="tab-list">
+            <button role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1" type="button" class="tab-button active">PHOTO</button>
+            <button role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2" type="button" class="tab-button">VIDEO</button>
+            <button role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" type="button" class="tab-button">AUDIO</button>
+        </div>
+
+        <section id="panel-1" role="tabpanel" aria-labelledby="tab-1" class="tab-panel active">
+            <h2>Photo Portfolio</h2>
+            <p>Photo projects</p>
+        </section>
+
+        <section id="panel-2" role="tabpanel" aria-labelledby="tab-2" class="tab-panel" hidden>
+            <h2>Video Portfolio</h2>
+            <p>Video projects</p>
+        </section>
+
+        <section id="panel-3" role="tabpanel" aria-labelledby="tab-3" class="tab-panel" hidden>
+            <h2>Audio Portfolio</h2>
+            <p>Audio projects</p>
         </section>
     </main>
 
