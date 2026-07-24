@@ -23,6 +23,7 @@ h1{
 }
 
 .tab-button{
+    color: var(--color-secondary);
     border: none;
     background: none;
     padding: 0.5em 2em;
