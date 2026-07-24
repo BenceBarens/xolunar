@@ -1,5 +1,6 @@
 main{
-    width: fit-content;
+    width: 80%;
+    max-width: 80em;
     margin: 5em auto;
 }
 
@@ -7,6 +8,7 @@ main{
     main{
         margin: 0 auto;
         padding-top: 2em;
+        width: 100%;
     }
 }
 
@@ -23,6 +25,7 @@ h1{
 }
 
 .tab-button{
+    color: var(--color-secondary);
     border: none;
     background: none;
     padding: 0.5em 2em;
@@ -42,10 +45,6 @@ h1{
 .tab-button.active{
     color: var(--color-accent);
     font-weight: bold;
-}
-
-#portfolio-container{
-    overflow-x: hidden; 
 }
 
 .slide-from-right {
@@ -76,4 +75,52 @@ h1{
         opacity: 1;
         transform: translateX(0);
     }
+}
+
+summary{
+    font-weight: 800;
+    cursor: pointer;
+    width: fit-content;
+    padding: 1em;
+    padding-left: 0;
+}
+
+#panel-1 ul{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7em, 1fr));
+    gap: 1em;
+    list-style-type: none;
+    padding: 0;
+}
+
+#panel-1 ul li{
+    width: 100%;
+    transition: all 100ms ease;
+}
+
+#panel-1 ul img{
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+
+#panel-1 ul p{
+    font-size: 0.6em;
+    line-break: anywhere;
+    margin: 0;
+}
+
+#panel-1 ul li:hover{
+    color: var(--color-accent);
+    transform: scale(1.1);;
+}
+
+#panel-1 ul li:hover img{
+    border: 0.1em solid var(--color-accent);
+}
+
+aside p{
+    text-align: center;
+    margin: 2em auto;
+    font-size: 1.5em;
 }

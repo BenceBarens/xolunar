@@ -51,34 +51,53 @@
         <div id="portfolio-container">
             <section id="panel-1" role="tabpanel" aria-labelledby="tab-1" class="tab-panel active">
                 <h2 class="visually-hidden">Photo portfolio</h2>
-                <h3>/covers</h3>
-                <p>Covers here</p>
-                <h3>/photography</h3>
-                <p>Covers here</p>
-                <h3>/other</h3>
-                <p>Other here</p>
+                <details name="photo" open>
+                    <summary>/covers</summary>
+                    <ul id="list-cover-art"></ul>
+                </details>
+                <details name="photo">
+                    <summary>/photography</summary>
+                    <ul id="list-photo"></ul>
+                </details>
+                <details name="photo">
+                    <summary>/other</summary>
+                    <ul id="list-overig"></ul>
+                </details>
             </section>
 
             <section id="panel-2" role="tabpanel" aria-labelledby="tab-2" class="tab-panel" hidden>
                 <h2 class="visually-hidden">Video portfolio</h2>
-                <h3>/animations</h3>
-                <p>Animations here</p>
-                <h3>/clips</h3>
-                <p>Clips here</p>
-                <h3>/spotify-canvases</h3>
-                <p>Canvases here</p>
+                <details name="video" open>
+                    <summary>/animations</summary>
+                    <p>Animations here</p>
+                </details>
+                <details name="video">
+                    <summary>/clips</summary>
+                    <p>Clips</p>
+                </details>
+                <details name="video">
+                    <summary>/spotify-canvases</summary>
+                    <p>Canvases here</p>
+                </details>
             </section>
 
             <section id="panel-3" role="tabpanel" aria-labelledby="tab-3" class="tab-panel" hidden>
                 <h2 class="visually-hidden">Audio portfolio</h2>
-                <h3>/beats</h3>
-                <p>Beats here</p>
-                <h3>/instrumentals</h3>
-                <p>Instrumentals here</p>
+                <details name="audio" open>
+                    <summary>/beats</summary>
+                    <p>Beats here</p>
+                </details>
+                <details name="audio">
+                    <summary>/instrumentals</summary>
+                    <p>Instrumentals here</p>
+                </details>
             </section>
         </div>
     </main>
 
+    <aside>
+        <p>See what you like? <a href="../contact/">Get in touch</a>.</p>
+    </aside>
 
     <footer>
         <p>Website <a href="https://bencebarens.nl" target="_blank">Made by Bence</a></p>
@@ -87,5 +106,6 @@
 
     <script src="../assets/script/main.js"></script>
     <script src="../assets/script/tabs.js"></script>
+    <script src="../assets/script/workgallery.js"></script>
 </body>
 </html>
