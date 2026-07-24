@@ -1,5 +1,13 @@
+@media (max-width: 1000px) {
+    main{
+        margin: 0 auto;
+        padding-top: 2em;
+    }
+}
+
 section{
-    width: fit-content;
+    width: 100%;
+    max-width: 40em;
     margin: 5em auto;
 }
 
