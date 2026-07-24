@@ -114,6 +114,7 @@
 
 .ring .photo-title {
     margin-top: .25em;
+    margin-right: auto;
     max-width: 100%;
     font-size: .7rem;
     word-break: break-word;
@@ -123,6 +124,7 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-break: strict;
 }
 
 .ring li:hover .photo-title{
@@ -197,6 +199,7 @@
     text-align: center;
     max-width: 100%;
     color: white;
+    line-break: anywhere;
 }
 
 #lightbox-close {
