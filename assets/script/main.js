@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const splash = document.getElementById('splash-screen');
     if (!splash) return;
 
-    if (sessionStorage.getItem('splashShown')) {
-        splash.style.display = 'none';
+    if (sessionStorage.getItem('splashShown') || prefersReducedMotion){
+        splash.hidden = true;
         return;
     }
 
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             splash.classList.add('fade-out');
             
             setTimeout(() => {
-                splash.style.display = 'none';
+                splash.hidden = true;
                 sessionStorage.setItem('splashShown', 'true');
             }, 500);
         }, 2500);
@@ -96,8 +96,6 @@ function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
         return Math.floor(baseStreams + extraStreams);
     }
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     if (prefersReducedMotion) {
         element.textContent = getCurrentStreams().toLocaleString('nl-NL');
         return;
@@ -115,7 +113,7 @@ function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
         }
         
         const minDelay = avgMsBetweenStreams * 0.1;
-        const maxDelay = avgMsBetweenStreams * 2;
+        const maxDelay = avgMsBetweenStreams * 3;
         const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
 
         setTimeout(tick, randomDelay);
