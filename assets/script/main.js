@@ -137,7 +137,7 @@ if (!prefersReducedMotion) {
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+        document.querySelectorAll('h1, h2, h3, h4, h5, h6, summary').forEach(heading => {
             observer.observe(heading);
         });
     });
