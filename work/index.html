@@ -48,21 +48,35 @@
             <button role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2" type="button" class="tab-button">VIDEO</button>
             <button role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" type="button" class="tab-button">AUDIO</button>
         </div>
+        <div id="portfolio-container">
+            <section id="panel-1" role="tabpanel" aria-labelledby="tab-1" class="tab-panel active">
+                <h2 class="visually-hidden">Photo portfolio</h2>
+                <h3>/covers</h3>
+                <p>Covers here</p>
+                <h3>/photography</h3>
+                <p>Covers here</p>
+                <h3>/other</h3>
+                <p>Other here</p>
+            </section>
 
-        <section id="panel-1" role="tabpanel" aria-labelledby="tab-1" class="tab-panel active">
-            <h2>Photo Portfolio</h2>
-            <p>Photo projects</p>
-        </section>
+            <section id="panel-2" role="tabpanel" aria-labelledby="tab-2" class="tab-panel" hidden>
+                <h2 class="visually-hidden">Video portfolio</h2>
+                <h3>/animations</h3>
+                <p>Animations here</p>
+                <h3>/clips</h3>
+                <p>Clips here</p>
+                <h3>/spotify-canvases</h3>
+                <p>Canvases here</p>
+            </section>
 
-        <section id="panel-2" role="tabpanel" aria-labelledby="tab-2" class="tab-panel" hidden>
-            <h2>Video Portfolio</h2>
-            <p>Video projects</p>
-        </section>
-
-        <section id="panel-3" role="tabpanel" aria-labelledby="tab-3" class="tab-panel" hidden>
-            <h2>Audio Portfolio</h2>
-            <p>Audio projects</p>
-        </section>
+            <section id="panel-3" role="tabpanel" aria-labelledby="tab-3" class="tab-panel" hidden>
+                <h2 class="visually-hidden">Audio portfolio</h2>
+                <h3>/beats</h3>
+                <p>Beats here</p>
+                <h3>/instrumentals</h3>
+                <p>Instrumentals here</p>
+            </section>
+        </div>
     </main>
 
 
@@ -72,5 +86,6 @@
     </footer>
 
     <script src="../assets/script/main.js"></script>
+    <script src="../assets/script/tabs.js"></script>
 </body>
 </html>
