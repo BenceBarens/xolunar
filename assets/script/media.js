@@ -174,8 +174,17 @@ window.addEventListener('scroll', () => {
     if (!isScrolling) {
         window.requestAnimationFrame(() => {
             const progress = Math.max(0, Math.min(1, window.scrollY / 350));
-            portfolioSection.style.opacity = 1 - progress;
+            const currentOpacity = 1 - progress;
+            
+            portfolioSection.style.opacity = currentOpacity;
             portfolioSection.style.transform = `translateY(${progress * -10}em)`;
+            
+            if (currentOpacity < 0.5) {
+                portfolioSection.classList.add('no-clicks');
+            } else {
+                portfolioSection.classList.remove('no-clicks');
+            }
+            
             isScrolling = false;
         });
         isScrolling = true;
