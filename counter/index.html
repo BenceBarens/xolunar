@@ -42,6 +42,44 @@
                 knop.innerText = "Fullscreen";
             }
         });
+
+        startInactivityCheck(
+            document.querySelector('body'),
+            2000,
+            (element) => {
+                element.style.cursor = 'none';
+                knop.style.opacity = '0'; 
+            },
+            (element) => {
+                element.style.cursor = null;
+                knop.style.opacity = '1';
+            }
+        );
+
+        function startInactivityCheck(element, delay, callbackInactivity, callbackActive) {
+            let timeoutId;
+            
+            setupTimers();
+
+            function setupTimers () {
+                element.addEventListener("mousemove", resetTimer, false);
+                element.addEventListener("mousedown", resetTimer, false);
+                element.addEventListener("keypress", resetTimer, false);
+                element.addEventListener("touchmove", resetTimer, false);
+
+                startTimer();
+            }
+
+            function startTimer() { 
+                timeoutId = setTimeout(() => callbackInactivity(element), delay);
+            }
+
+            function resetTimer() {
+                callbackActive(element);
+                clearTimeout(timeoutId);
+                startTimer();
+            }
+        }
     </script>
 </body>
 </html>
