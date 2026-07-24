@@ -96,6 +96,11 @@
     pointer-events: auto;
 }
 
+#portfolio.no-clicks,
+#portfolio.no-clicks * {
+    pointer-events: none !important;
+}
+
 .ring img, .ring video {
     max-width: var(--item-width, 150px);
     max-height: var(--item-height, 150px);

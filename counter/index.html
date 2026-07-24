@@ -1,0 +1,47 @@
+<!DOCTYPE html><!-- Website Made by Bence (bencebarens.nl) -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Bence Barens">
+
+    <title>XOLunar | Counter</title>
+    <meta name="robots" content="noindex,follow">
+
+    <link rel="stylesheet" href="../assets/style/base.css">
+    <link rel="stylesheet" href="../assets/style/counterpage.css">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
+    <meta name="theme-color" content="#ff0000">
+</head>
+<body id="counterpage">
+    <main id="main">
+        <p id="counter-wrapper">
+            <span class="counter-text">the work of XOLunar has been seen</span>
+            <span id="counter">252.223.087</span>
+            <span class="counter-text">times worldwide</span>
+        </p>
+    </main>
+
+    <button id="fullscreenKnop" type="button">Fullscreen</button>
+
+    <script src="../assets/script/main.js"></script>
+    <script>
+        const knop = document.getElementById('fullscreenKnop');
+
+        knop.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch((err) => {
+                    console.error(`Error opening fullscreen: ${err.message}`);
+                });
+                knop.innerText = "Exit fullscreen";
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+                knop.innerText = "Fullscreen";
+            }
+        });
+    </script>
+</body>
+</html>

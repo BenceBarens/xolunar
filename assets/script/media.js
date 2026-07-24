@@ -1,5 +1,8 @@
 // Website Made by Bence (bencebarens.nl)
 
+// ==========================================
+// SETTINGS & GLOBALS
+// ==========================================
 const GLOBAL_SETTINGS = {
     mediaUrl: './media.json',
     videosUrl: './videos.json',
@@ -11,18 +14,52 @@ const GLOBAL_SETTINGS = {
 let mediaItems = [];
 let currentLayoutId = '';
 
+// DOM
+const stage = document.querySelector('#carousel-stage');
+const portfolioSection = document.querySelector('#portfolio');
+const lightbox = document.querySelector('#lightbox');
+const lightboxMedia = document.querySelector('#lightbox-media');
+const lightboxTitle = document.querySelector('#lightbox-title');
+const lightboxClose = document.querySelector('#lightbox-close');
+
+
+// ==========================================
+// HELPER FUNCTIONS
+// ==========================================
+function isVideoFile(fileName) {
+    return /\.(mp4|webm|mov|avi|mkv)$/i.test(fileName);
+}
+
+function formatTitle(file) {
+    const rawFileName = file.split('/').pop().split('?')[0];
+    const isVideo = isVideoFile(rawFileName);
+    
+    return rawFileName
+        .replace(/\.[^/.]+$/, isVideo ? '.mp4' : '.jpg')
+        .toLowerCase()
+        .replace(/ /g, '_');
+}
+
+function formatAlt(file) {
+    return file
+        .replace(/\.[^/.]+$/, '')
+        .replace(/\([^)]*\)|\[[^\]]*\]/g, '')
+        .replace(/\d/g, '')
+        .replace(/\//g, ' of ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+
+// ==========================================
+// CAROUSEL
+// ==========================================
 function getLayoutSettings() {
     const width = window.innerWidth;
-    
-    if (width < 600) {
-        return { id: 'mobile', rings: 3, slotsPerRing: 16, ringSpacing: 180, itemWidth: 100, itemHeight: 120 };
-    } else if (width < 900) {
-        return { id: 'tablet', rings: 3, slotsPerRing: 16, ringSpacing: 240, itemWidth: 140, itemHeight: 160 };
-    } else if (width < 1600) {
-        return { id: 'desktop', rings: 3, slotsPerRing: 20, ringSpacing: 300, itemWidth: 200, itemHeight: 200 };
-    } else {
-        return { id: 'ultrawide', rings: 3, slotsPerRing: 32, ringSpacing: 350, itemWidth: 240, itemHeight: 240 };
-    }
+    if (width < 600) return { id: 'mobile', rings: 3, slotsPerRing: 16, ringSpacing: 180, itemWidth: 100, itemHeight: 120 };
+    if (width < 900) return { id: 'tablet', rings: 3, slotsPerRing: 16, ringSpacing: 240, itemWidth: 140, itemHeight: 160 };
+    if (width < 1600) return { id: 'desktop', rings: 3, slotsPerRing: 20, ringSpacing: 300, itemWidth: 200, itemHeight: 200 };
+    return { id: 'ultrawide', rings: 3, slotsPerRing: 32, ringSpacing: 350, itemWidth: 240, itemHeight: 240 };
 }
 
 async function loadMedia() {
@@ -36,17 +73,38 @@ async function loadMedia() {
         const videos = await videoResponse.json();
         
         mediaItems = [...photos, ...videos].sort(() => Math.random() - 0.5);
-        
         setupCarousel();
     } catch (error) {
         console.error("Fout bij het laden van media:", error);
     }
 }
 
+function createMediaElement(file, layout, prefersReducedMotion) {
+    let mediaElement;
+
+    if (file.startsWith('http')) {
+        // Video config
+        mediaElement = document.createElement('video');
+        mediaElement.src = file;
+        mediaElement.poster = file.replace('/upload/', '/upload/so_2/').replace(/\.(mp4|webm|mov)$/i, '.jpg');
+        mediaElement.loop = true;
+        mediaElement.muted = true;
+        mediaElement.controls = false;
+        mediaElement.setAttribute('muted', ''); 
+        mediaElement.setAttribute('playsinline', ''); 
+        mediaElement.autoplay = !prefersReducedMotion;
+    } else {
+        // Foto config
+        mediaElement = document.createElement('img');
+        const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
+        mediaElement.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${layout.itemWidth}&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
+        mediaElement.alt = `Portfolio: ${formatAlt(file)}`;
+    }
+    return mediaElement;
+}
+
 function setupCarousel() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const stage = document.querySelector('#carousel-stage');
-    
     stage.innerHTML = ''; 
     if (mediaItems.length === 0) return;
 
@@ -62,63 +120,33 @@ function setupCarousel() {
     for (let r = 0; r < layout.rings; r++) {
         const ringEl = document.createElement('ul');
         ringEl.className = 'ring';
-        
-        const currentOffset = startOffset + (r * layout.ringSpacing);
-        ringEl.style.setProperty('--row-offset', `${currentOffset}px`);
+        ringEl.style.setProperty('--row-offset', `${startOffset + (r * layout.ringSpacing)}px`);
 
         for (let s = 0; s < layout.slotsPerRing; s++) {
             const li = document.createElement('li');
             li.style.setProperty('--slot', s);
+            li.style.cursor = 'pointer'; 
             
             const file = mediaItems[globalMediaIndex % mediaItems.length];
             globalMediaIndex++;
 
-            let mediaElement;
-
-            if (file.startsWith('http')) {
-                mediaElement = document.createElement('video');
-                mediaElement.src = file;
-                
-                const posterUrl = file
-                    .replace('/upload/', '/upload/so_2/') 
-                    .replace(/\.(mp4|webm|mov)$/i, '.jpg');
-                
-                mediaElement.poster = posterUrl;
-                mediaElement.loop = true;
-                mediaElement.muted = true;
-                mediaElement.controls = false;
-                mediaElement.setAttribute('muted', ''); 
-                mediaElement.setAttribute('playsinline', ''); 
-                mediaElement.autoplay = !prefersReducedMotion;
-                
-            } else {
-                // Lokale GitHub Foto via wsrv.nl
-                mediaElement = document.createElement('img');
-                const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
-                mediaElement.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${layout.itemWidth}&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
-                mediaElement.alt = `Portfolio: ${file}`;
-            }
-
-            li.style.cursor = 'pointer'; 
+            const mediaElement = createMediaElement(file, layout, prefersReducedMotion);
             li.addEventListener('click', () => openLightbox(file));
 
             const title = document.createElement('span');
             title.className = 'photo-title';
-            title.textContent = file.split('/').pop().split('?')[0]; 
+            title.textContent = formatTitle(file);
 
             li.appendChild(mediaElement);
             li.appendChild(title);
             ringEl.appendChild(li);
         }
-
         stage.appendChild(ringEl);
     }
-
     updateGeometry(layout);
 }
 
 function updateGeometry(layout) {
-    const stage = document.querySelector('#carousel-stage');
     const angle = 360 / layout.slotsPerRing;
     const itemSpacing = layout.itemWidth + 40; 
     const radius = Math.round((itemSpacing / 2) / Math.tan(Math.PI / layout.slotsPerRing));
@@ -127,65 +155,65 @@ function updateGeometry(layout) {
     stage.style.setProperty('--radius', `${radius}px`);
 }
 
+
+// ==========================================
+// EVENT LISTENERS & ANIMATIONS
+// ==========================================
+
 let resizeTimer;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
         const newLayout = getLayoutSettings();
-        if (newLayout.id !== currentLayoutId) {
-            setupCarousel();
-        }
+        if (newLayout.id !== currentLayoutId) setupCarousel();
     }, 200);
 });
 
-loadMedia();
-
-const portfolioSection = document.querySelector('#portfolio');
-
+let isScrolling = false;
 window.addEventListener('scroll', () => {
-    const scrolled = window.scrollY;
-    const fadeOutDistance = 350; 
-    
-    let progress = scrolled / fadeOutDistance;
-    progress = Math.max(0, Math.min(1, progress));
-    
-    let newOpacity = 1 - progress;
-    let newTranslateY = progress * -10; 
-    
-    portfolioSection.style.opacity = newOpacity;
-    portfolioSection.style.transform = `translateY(${newTranslateY}em)`;
-});
+    if (!isScrolling) {
+        window.requestAnimationFrame(() => {
+            const progress = Math.max(0, Math.min(1, window.scrollY / 350));
+            const currentOpacity = 1 - progress;
+            
+            portfolioSection.style.opacity = currentOpacity;
+            portfolioSection.style.transform = `translateY(${progress * -10}em)`;
+            
+            if (currentOpacity < 0.5) {
+                portfolioSection.classList.add('no-clicks');
+            } else {
+                portfolioSection.classList.remove('no-clicks');
+            }
+            
+            isScrolling = false;
+        });
+        isScrolling = true;
+    }
+}, { passive: true });
 
-const lightbox = document.querySelector('#lightbox');
-const lightboxMedia = document.querySelector('#lightbox-media');
-const lightboxTitle = document.querySelector('#lightbox-title');
-const lightboxClose = document.querySelector('#lightbox-close');
-const carouselStage = document.querySelector('#carousel-stage');
 
+// ==========================================
+// LIGHTBOX
+// ==========================================
 function openLightbox(file) {
-    carouselStage.classList.add('paused');
+    stage.classList.add('paused');
     lightboxMedia.innerHTML = '';
-    lightboxTitle.textContent = file.split('/').pop().split('?')[0];
+    lightboxTitle.textContent = formatTitle(file);
 
     if (file.startsWith('http')) {
-        const highResUrl = file.replace(/w_\d+,h_\d+,c_[a-z]+,/, 'w_800,q_auto,f_auto/');
-        
         const video = document.createElement('video');
-        video.src = highResUrl;
-        video.controls = false; 
+        video.src = file.replace(/w_\d+,h_\d+,c_[a-z]+,/, 'w_800,q_auto,f_auto/');
         video.autoplay = true;
         video.playsInline = true;
-        video.muted = false;
         video.loop = true;
-
         lightboxMedia.appendChild(video);
     } else {
         const img = document.createElement('img');
         const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
         img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=800&output=${GLOBAL_SETTINGS.imageFormat}&q=80`;
+        img.alt = formatAlt(file);
         lightboxMedia.appendChild(img);
     }
-
     lightbox.showModal();
 }
 
@@ -194,14 +222,17 @@ function closeLightbox() {
 }
 
 lightbox.addEventListener('close', () => {
-    carouselStage.classList.remove('paused');
+    stage.classList.remove('paused');
     lightboxMedia.innerHTML = '';
 });
 
 lightboxClose.addEventListener('click', closeLightbox);
-
 lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
-        closeLightbox();
-    }
+    if (e.target === lightbox) closeLightbox();
 });
+
+
+// ==========================================
+// 6. INITIATION
+// ==========================================
+loadMedia();

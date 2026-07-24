@@ -159,6 +159,10 @@ h5, h6 {
     margin: 0;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 /* Skip to main */
 
 body > a:first-child{
