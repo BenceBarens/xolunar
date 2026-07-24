@@ -3,6 +3,13 @@ main{
     margin: 5em auto;
 }
 
+@media (max-width: 1000px) {
+    main{
+        margin: 0 auto;
+        padding-top: 2em;
+    }
+}
+
 h1{
     width: fit-content;
 }
