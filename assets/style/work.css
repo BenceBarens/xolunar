@@ -2,6 +2,7 @@ main{
     width: 80%;
     max-width: 80em;
     margin: 5em auto;
+    overflow-x: hidden;
 }
 
 @media (max-width: 1000px) {
@@ -77,7 +78,7 @@ h1{
     }
 }
 
-summary{
+#portfolio-container summary{
     font-weight: 800;
     cursor: pointer;
     width: fit-content;
@@ -85,17 +86,31 @@ summary{
     padding-left: 0;
 }
 
-#panel-1 ul{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(7em, 1fr));
-    gap: 1em;
-    list-style-type: none;
-    padding: 0;
+#portfolio-container ul li:hover{
+    color: var(--color-accent);
+    transform: scale(1.05);;
 }
 
-#panel-1 ul li{
-    width: 100%;
+#portfolio-container ul li:hover img,
+#portfolio-container ul li:hover video{
+    border: 0.1em solid var(--color-accent);
+}
+
+#portfolio-container ul li{
     transition: all 100ms ease;
+    height: fit-content;
+}
+
+/* /////////// */
+/* PANEL 1 /// */
+/* /////////// */
+
+#panel-1 ul{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7em, 1fr));
+    gap: 0.5em;
+    list-style-type: none;
+    padding: 0;
 }
 
 #panel-1 ul img{
@@ -110,13 +125,26 @@ summary{
     margin: 0;
 }
 
-#panel-1 ul li:hover{
-    color: var(--color-accent);
-    transform: scale(1.1);;
+/* /////////// */
+/* PANEL 2 /// */
+/* /////////// */
+
+#panel-2 ul{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7em, 1fr));
+    gap: 0.5em;
+    list-style-type: none;
+    padding: 0;
 }
 
-#panel-1 ul li:hover img{
-    border: 0.1em solid var(--color-accent);
+#panel-2 ul video{
+    width: 100%;
+}
+
+#panel-2 ul p{
+    font-size: 0.6em;
+    line-break: anywhere;
+    margin: 0;
 }
 
 aside p{

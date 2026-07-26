@@ -58,8 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // VIEW COUNTER /////////////////////////////////////////////////////////////////
 
-const DAILY_GROWTH_FACTOR = 1.000688224363364;
-
 async function loadStreamCounter() {
     const counterElement = document.querySelector('#counter');
     if (!counterElement) return;
@@ -71,10 +69,11 @@ async function loadStreamCounter() {
         const data = await response.json();
         const baseStreams = data.total_streams;
         const lastUpdatedTime = new Date(data.last_updated).getTime();
+        const dailyGrowthFactor = data.daily_growth_factor;
 
         if (!baseStreams || isNaN(lastUpdatedTime)) throw new Error("Ongeldige data in JSON");
 
-        startRealtimeTicking(counterElement, baseStreams, lastUpdatedTime);
+        startRealtimeTicking(counterElement, baseStreams, lastUpdatedTime, dailyGrowthFactor);
 
     } catch (error) {
         console.error("Kon de realtime streamcount niet laden:", error);
@@ -83,8 +82,8 @@ async function loadStreamCounter() {
     }
 }
 
-function startRealtimeTicking(element, baseStreams, lastUpdatedTime) {
-    const estimatedDailyGrowth = baseStreams * (DAILY_GROWTH_FACTOR - 1);
+function startRealtimeTicking(element, baseStreams, lastUpdatedTime, dailyGrowthFactor) {
+    const estimatedDailyGrowth = baseStreams * (dailyGrowthFactor - 1);
 
     const streamsPerMs = estimatedDailyGrowth / (24 * 60 * 60 * 1000);
     const avgMsBetweenStreams = (24 * 60 * 60 * 1000) / (estimatedDailyGrowth || 1);

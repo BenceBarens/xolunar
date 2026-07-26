@@ -72,7 +72,11 @@ async function loadMedia() {
         const photos = await photoResponse.json();
         const videos = await videoResponse.json();
         
-        mediaItems = [...photos, ...videos].sort(() => Math.random() - 0.5);
+        const canvasVideos = videos
+            .filter(item => item.folder === 'canvas')
+            .map(item => item.url);
+        
+        mediaItems = [...photos, ...canvasVideos].sort(() => Math.random() - 0.5);
         setupCarousel();
     } catch (error) {
         console.error("Fout bij het laden van media:", error);
