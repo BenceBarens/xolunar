@@ -6,10 +6,37 @@ const characters = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!@#$%^&*
 // SCRAMBLE FUNCTIE (Globaal beschikbaar) ///////////////////////////////////////
 
 function scramble(element, reverse = false) {
-    const originalText = element.innerText;
+    if (element.scrambleInterval) clearInterval(element.scrambleInterval);
+
+    if (!element.dataset.originalText) {
+        // 1. Sla originele tekst op
+        element.dataset.originalText = element.innerText;
+        
+        // 2. FIX VOOR LAYOUT SHIFTS
+        // Meet de exacte huidige breedte van het element
+        const rect = element.getBoundingClientRect();
+        
+        // Standaard <a> tags zijn 'inline' en negeren breedte-instellingen. 
+        // We forceren 'inline-block' zodat we de breedte kunnen vastzetten.
+        if (window.getComputedStyle(element).display === 'inline') {
+            element.style.display = 'inline-block';
+        }
+        
+        // Zet de breedte vast op de gemeten pixels
+        element.style.width = `${rect.width}px`;
+        // Voorkom dat willekeurige, bredere tekens de tekst naar een tweede regel drukken (hoogte-shift)
+        element.style.whiteSpace = 'nowrap';
+        
+        // 3. TOEGANKELIJKHEID
+        if (!element.hasAttribute('aria-label')) {
+            element.setAttribute('aria-label', element.dataset.originalText);
+        }
+    }
+    
+    const originalText = element.dataset.originalText;
     let iteration = 0;
     
-    const interval = setInterval(() => {
+    element.scrambleInterval = setInterval(() => {
         element.innerText = originalText
             .split("")
             .map((letter, index) => {
@@ -22,7 +49,10 @@ function scramble(element, reverse = false) {
             })
             .join("");
         
-        if (iteration >= originalText.length) clearInterval(interval);
+        if (iteration >= originalText.length) {
+            clearInterval(element.scrambleInterval);
+            element.innerText = originalText;
+        }
         iteration += 3;
     }, 80);
 }
@@ -138,6 +168,20 @@ if (!prefersReducedMotion) {
 
         document.querySelectorAll('h1, h2, h3, h4, h5, h6, summary').forEach(heading => {
             observer.observe(heading);
+        });
+    });
+}
+
+// SCRAMBLER VOOR LINKS EN KNOPPEN //////////////////////////////////////////////
+
+if (!prefersReducedMotion) {
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('a, button').forEach(el => {
+            
+            el.addEventListener('mouseenter', function() {
+                scramble(this);
+            });
+            
         });
     });
 }
