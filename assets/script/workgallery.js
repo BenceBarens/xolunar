@@ -80,8 +80,59 @@ async function generateMediaLists() {
         });
 
     } catch (error) {
-        console.error("Fout bij het ophalen van de media:", error);
+        console.error("Error retrieving images:", error);
     }
 }
 
 generateMediaLists();
+
+// ==========================================
+// VIDEO GALLERY
+// ==========================================
+
+async function generateVideoLists() {
+    try {
+        const response = await fetch('../videos.json');
+        const items = await response.json(); 
+
+        const ulCanvas = document.getElementById('list-video-map1'); 
+        const ulClip = document.getElementById('list-video-overig'); 
+        const ulVideoOverig = document.getElementById('list-video-map2');
+
+        items.forEach(item => {
+            const url = item.url;
+            const folder = item.folder || 'overig';
+
+            const li = document.createElement('li');
+            
+            const mediaElement = document.createElement('video');
+            mediaElement.src = url;
+            mediaElement.poster = url.replace('/upload/', '/upload/so_2/').replace(/\.(mp4|webm|mov)$/i, '.jpg');
+            mediaElement.loop = true;
+            mediaElement.muted = true;
+            mediaElement.controls = false;
+            mediaElement.setAttribute('muted', ''); 
+            mediaElement.setAttribute('playsinline', ''); 
+            mediaElement.autoplay = !prefersReducedMotion;
+
+            const titleElement = document.createElement('p');
+            titleElement.textContent = formatTitle(url);
+
+            li.appendChild(mediaElement);
+            li.appendChild(titleElement);
+
+            if (folder === 'canvas') {
+                ulCanvas.appendChild(li);
+            } else if (folder === 'clip') {
+                ulClip.appendChild(li);
+            } else {
+                ulVideoOverig.appendChild(li);
+            }
+        });
+
+    } catch (error) {
+        console.error("Error retrieving videos:", error);
+    }
+}
+
+generateVideoLists();
