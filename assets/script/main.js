@@ -9,25 +9,25 @@ function scramble(element, reverse = false) {
     if (element.scrambleInterval) clearInterval(element.scrambleInterval);
 
     if (!element.dataset.originalText) {
+        // 1. Sla originele tekst op
         element.dataset.originalText = element.innerText;
         
+        // 2. FIX VOOR LAYOUT SHIFTS
+        // Meet de exacte huidige breedte van het element
         const rect = element.getBoundingClientRect();
         
+        // Standaard <a> tags zijn 'inline' en negeren breedte-instellingen. 
+        // We forceren 'inline-block' zodat we de breedte kunnen vastzetten.
         if (window.getComputedStyle(element).display === 'inline') {
             element.style.display = 'inline-block';
         }
         
+        // Zet de breedte vast op de gemeten pixels
         element.style.width = `${rect.width}px`;
-        element.style.height = `${rect.height}px`;
+        // Voorkom dat willekeurige, bredere tekens de tekst naar een tweede regel drukken (hoogte-shift)
+        element.style.whiteSpace = 'nowrap';
         
-        const isHeading = element.tagName.match(/^H[1-6]$/i);
-        
-        if (!isHeading) {
-            element.style.whiteSpace = 'nowrap';
-        } else {
-            element.style.overflow = 'hidden'; 
-        }
-        
+        // 3. TOEGANKELIJKHEID
         if (!element.hasAttribute('aria-label')) {
             element.setAttribute('aria-label', element.dataset.originalText);
         }
