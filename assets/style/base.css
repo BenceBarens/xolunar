@@ -123,19 +123,18 @@ body{
     width: 1px;
 }
 
-button, label{
-    cursor: pointer;
-}
-
-a{
+a, label, button, input, textarea, select{
     color: inherit;
     transition: all 200ms ease;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
 }
 
 a:hover{
     color: var(--color-accent);
     font-weight: 800;
     font-stretch: 95%;
+    line-height: 1lh;
 }
 
 P{
