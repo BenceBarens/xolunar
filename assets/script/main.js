@@ -136,8 +136,22 @@ if (!prefersReducedMotion) {
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('h1, h2, h3, h4, h5, h6, summary').forEach(heading => {
+        document.querySelectorAll('h1.scramble, h2.scramble, h3.scramble, h4.scramble, h5.scramble, h6.scramble, summary.scramble').forEach(heading => {
             observer.observe(heading);
+        });
+    });
+}
+
+// SCRAMBLER VOOR LINKS EN KNOPPEN //////////////////////////////////////////////
+
+if (!prefersReducedMotion) {
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('a.scramble, button.scramble').forEach(el => {
+            
+            el.addEventListener('mouseenter', function() {
+                scramble(this);
+            });
+            
         });
     });
 }

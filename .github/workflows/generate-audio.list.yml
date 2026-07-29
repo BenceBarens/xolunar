@@ -1,0 +1,50 @@
+name: Generate Audio List
+
+on:
+  push:
+    paths:
+      - 'assets/media/audio/**'
+      - '.github/workflows/generate-audio-list.yml' 
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 
+
+      - name: Generate JSON list
+        run: |
+          # Navigeer naar de audio map
+          cd assets/media/audio
+          
+          echo "[" > ../../../audio.json
+          first=true
+
+          # Zoek naar veelvoorkomende audio-extensies
+          find . -mindepth 1 -maxdepth 2 -type f \( -iname "*.mp3" -o -iname "*.wav" -o -iname "*.ogg" -o -iname "*.m4a" -o -iname "*.flac" \) | while read -r file; do
+            clean_path=$(echo "$file" | sed 's|^\./||')
+            
+            if [ "$first" = true ]; then
+              first=false
+            else
+              echo "," >> ../../../audio.json
+            fi
+            echo "  \"$clean_path\"" >> ../../../audio.json
+          done
+          
+          echo "]" >> ../../../audio.json
+
+      - name: Commit and push JSON
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          # Voeg het nieuwe audio.json bestand toe
+          git add audio.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update nested audio list" && git push)
