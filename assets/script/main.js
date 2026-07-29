@@ -6,37 +6,10 @@ const characters = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!@#$%^&*
 // SCRAMBLE FUNCTIE (Globaal beschikbaar) ///////////////////////////////////////
 
 function scramble(element, reverse = false) {
-    if (element.scrambleInterval) clearInterval(element.scrambleInterval);
-
-    if (!element.dataset.originalText) {
-        element.dataset.originalText = element.innerText;
-        
-        const rect = element.getBoundingClientRect();
-        
-        if (window.getComputedStyle(element).display === 'inline') {
-            element.style.display = 'inline-block';
-        }
-        
-        element.style.width = `${rect.width}px`;
-        element.style.height = `${rect.height}px`;
-        
-        const isHeading = element.tagName.match(/^H[1-6]$/i);
-        
-        if (!isHeading) {
-            element.style.whiteSpace = 'nowrap';
-        } else {
-            element.style.overflow = 'hidden'; 
-        }
-        
-        if (!element.hasAttribute('aria-label')) {
-            element.setAttribute('aria-label', element.dataset.originalText);
-        }
-    }
-    
-    const originalText = element.dataset.originalText;
+    const originalText = element.innerText;
     let iteration = 0;
     
-    element.scrambleInterval = setInterval(() => {
+    const interval = setInterval(() => {
         element.innerText = originalText
             .split("")
             .map((letter, index) => {
@@ -49,10 +22,7 @@ function scramble(element, reverse = false) {
             })
             .join("");
         
-        if (iteration >= originalText.length) {
-            clearInterval(element.scrambleInterval);
-            element.innerText = originalText;
-        }
+        if (iteration >= originalText.length) clearInterval(interval);
         iteration += 3;
     }, 80);
 }
