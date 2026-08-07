@@ -1,16 +1,92 @@
-@media (max-width: 1000px) {
-    main{
-        margin: 0 auto;
-        padding-top: 2em;
-    }
-}
-
 section{
     width: 100%;
     max-width: 40em;
-    margin: 5em auto;
+    margin: 4em auto;
 }
 
 h1{
     width: fit-content;
+}
+
+body.is-submitting,
+body.is-submitting * {
+    cursor: progress !important;
+}
+
+/*****************/
+/* FORM STYLING  */
+/*****************/
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 0.5em;
+    background-color: transparent;
+    border: 0.1em solid var(--color-secondary);
+}
+
+textarea{
+    resize: vertical;
+    min-height: calc(1lh + 1.4em);
+    max-height: 15em;
+}
+
+.field-error {
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+    border-color: var(--color-accent) !important;
+}
+
+form button{
+    padding: 0.5em 1em;
+    font-weight: 600;
+    color: var(--color-primary);
+    background-color: var(--color-secondary);
+    border: 0.1em solid var(--color-secondary);
+    transition: all 200ms ease;
+}
+
+form button:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-primary);
+}
+
+dialog{
+    position: fixed;
+    padding: 0;
+    bottom: 1em;
+    padding-left: 1em;
+    background-color: var(--color-primary);
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
+    max-width: calc(100vw - 2em);
+    z-index: 950;
+    border: 0.1em solid var(--color-secondary);
+}
+
+dialog div{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+dialog button{
+    font-size: 1.5em;
+    padding: 0.5em;
+    transition: all 200ms ease;
+}
+
+dialog button:hover{
+    color: var(--color-accent);
 }

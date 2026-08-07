@@ -9,6 +9,11 @@
     <meta name="description" content="We are XOLunar, your creative partner in professional audiovisual solutions based in the heart of Amsterdam. We specialize in crafting compelling visuals that transform your artistic vision into reality.">
     <meta name="robots" content="index,follow">
 
+    <meta property="og:site_name" content="XOLunar">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="">
+
     <link rel="stylesheet" href="../assets/style/base.css">
     <link rel="stylesheet" href="../assets/style/main.css">
     <link rel="stylesheet" href="../assets/style/contact.css">
@@ -39,9 +44,37 @@
     </header>
     <main id="main">
         <section>
-            <h1 class="scramble">Contact</h1>
+            <h1 class="scramble">Reach out to us</h1>
             <p>Chamber of commerce (CoC): 97153826<br>VAT: xxxxxxxxxx</p>
             <p>Email: <a href="mailto:info%40xolunar.com?subject=New%20inquiry&body=Hi%20XOLunar%2C">info@xolunar.com</a><br>Instagram: <a href="https://www.instagram.com/xolunarofficial/">@XOLunarofficial</a></p>
+
+            <form id="contact-form" action="https://formspree.io/f/xzdnqdbg" method="POST" novalidate>
+                <div class="form-group">
+                    <label for="name" class="fw-600">Name</label>
+                    <input type="text" id="name" name="name" required autocomplete="name" aria-describedby="name-error">
+                    <span id="name-error" class="field-error" hidden></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="fw-600">Email address</label>
+                    <input type="email" id="email" name="email" required autocomplete="email" aria-describedby="email-error" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$">
+                    <span id="email-error" class="field-error" hidden></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="message" class="fw-600">Message</label>
+                    <textarea id="message" name="message" rows="5" required aria-describedby="message-error"></textarea>
+                    <span id="message-error" class="field-error" hidden></span>
+                </div>
+
+                <button type="submit">Send message</button>
+            </form>
+            <dialog id="form-status" class="form-response">
+                <div>
+                    <p id="status-message"></p>
+                    <button type="button" id="close-status" class="close-btn" aria-label="Close notification">&times;</button>
+                </div>
+            </dialog>
         </section>
     </main>
 
@@ -51,5 +84,6 @@
     </footer>
 
     <script src="../assets/script/main.js"></script>
+    <script src="../assets/script/contact.js"></script>
 </body>
 </html>

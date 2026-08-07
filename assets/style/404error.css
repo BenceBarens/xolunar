@@ -1,0 +1,52 @@
+main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    height: 100vh;
+}
+
+h1{
+    font-size: 4em;
+    mix-blend-mode: difference;
+    color: var(--color-primary);
+    --color-accent: #00ffff;
+}
+
+h1 *::selection{
+    color: var(--color-secondary);
+    text-shadow: black 0 0 0.2em;
+}
+
+ul{
+    list-style-type: "-> ";
+}
+
+li{
+    line-height: 1.2lh;
+}
+
+main p, footer p, a{
+    background-color: var(--color-primary);
+}
+
+main p{
+    display: inline;
+}
+
+main img{
+    width: 15em;
+}
+
+@media (max-width: 1000px) {
+    main{
+        height: 90vh;
+    }
+
+    main img{
+        position: fixed;
+        bottom: -5vh;
+        right: -5vh;
+        z-index: -1;
+    }
+}
