@@ -215,3 +215,19 @@ main{
     70% { opacity: 1; transform: scale(1.5); }
     100% { opacity: 0; transform: scale(3); }
 }
+
+@media (prefers-reduced-motion: reduce){
+    #splash-screen{
+        display: none;
+    }
+}
+
+#y2k-grid{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+}
