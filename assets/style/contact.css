@@ -27,7 +27,7 @@ body.is-submitting * {
 input, textarea {
     width: 100%;
     padding: 0.5em;
-    background-color: transparent;
+    background-color: var(--color-primary);
     border: 0.1em solid var(--color-secondary);
 }
 
