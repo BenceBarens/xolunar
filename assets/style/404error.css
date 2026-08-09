@@ -9,8 +9,11 @@ main{
 h1{
     font-size: 6em;
     mix-blend-mode: difference;
-    color: var(--color-primary);
-    --color-accent: #00ffff;
+    color: white;
+}
+
+@media (prefers-color-scheme: light){
+    h1{--color-accent: #00ffff;}
 }
 
 h1 *::selection{
