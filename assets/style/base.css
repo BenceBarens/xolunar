@@ -140,7 +140,7 @@ a:hover{
     font-stretch: 95%;
 }
 
-P{
+P, li{
     max-width: 40em;
 }
 
