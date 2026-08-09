@@ -1,0 +1,10 @@
+main{
+    margin: auto;
+    width: fit-content;
+}
+
+@media (min-width: 1000px) {
+    main{
+        padding-top: 6em;
+    }
+}

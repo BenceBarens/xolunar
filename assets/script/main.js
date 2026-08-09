@@ -221,10 +221,37 @@ document.body.addEventListener('mouseout', (e) => {
     }
 });
 
+let prevMouse = { x: -1000, y: -1000 };
+
 if (hasHoverSupport) {
     window.addEventListener('mousemove', (e) => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
+
+        if (!prefersReducedMotion && prevMouse.x !== -1000) {
+            const dx = mouse.x - prevMouse.x;
+            const dy = mouse.y - prevMouse.y;
+
+            if (Math.hypot(dx, dy) > 8 && Math.random() < 1) {
+                const trailX = mouse.x - dx * 2;
+                const trailY = mouse.y - dy * 2;
+
+                const targetCol = Math.floor(trailX / GRID_SIZE);
+                const targetRow = Math.floor(trailY / GRID_SIZE);
+
+                if (targetCol >= 0 && targetCol < cols && targetRow >= 0 && targetRow < rows) {
+                    const currentTile = tiles[targetRow * cols + targetCol];
+
+                    if (currentTile && !currentTile.isGlitching) {
+                        currentTile.isGlitching = true;
+                        currentTile.glitchTimer = Math.floor(Math.random() * 8) + 1; 
+                    }
+                }
+            }
+        }
+
+        prevMouse.x = mouse.x;
+        prevMouse.y = mouse.y;
     });
 }
 

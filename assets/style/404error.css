@@ -7,10 +7,13 @@ main{
 }
 
 h1{
-    font-size: 4em;
+    font-size: 6em;
     mix-blend-mode: difference;
-    color: var(--color-primary);
-    --color-accent: #00ffff;
+    color: white;
+}
+
+@media (prefers-color-scheme: light){
+    h1{--color-accent: #00ffff;}
 }
 
 h1 *::selection{
@@ -41,12 +44,22 @@ main img{
 @media (max-width: 1000px) {
     main{
         height: 90vh;
+        align-items: center;
+    }
+
+    main div{
+        width: 100%;
+        max-width: 30rem;
+    }
+
+    h1{
+        text-align: right;
     }
 
     main img{
         position: fixed;
-        bottom: -5vh;
-        right: -5vh;
+        top: 20vh;
+        right: -10vh;
         z-index: -1;
     }
 }

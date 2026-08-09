@@ -118,8 +118,15 @@ footer p{
 }
 
 main{
-    padding: 2em 1em;
+    padding: 6em 1em 2em 1em;
+    padding-top: 6em;
     min-height: 90vh;
+}
+
+@media (max-width: 1000px) {
+    main{
+        padding-top: 2em;
+    }
 }
 
 /* SPLASH SCREEN //////////////////////////////////////////////// */
@@ -221,6 +228,8 @@ main{
         display: none;
     }
 }
+
+/* PIXEL GRID //////////////////////////////////////////////////// */
 
 #y2k-grid{
     position: fixed;
