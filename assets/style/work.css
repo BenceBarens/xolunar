@@ -86,9 +86,11 @@ h1{
     padding-left: 0;
 }
 
-#portfolio-container ul li:hover{
+#panel-1 ul li:hover,
+#panel-2 ul li:hover{
     color: var(--color-accent);
     transform: scale(1.05);;
+    cursor: pointer;
 }
 
 #portfolio-container ul li:hover img,
@@ -99,7 +101,6 @@ h1{
 #portfolio-container ul li{
     transition: all 100ms ease;
     height: fit-content;
-    cursor: pointer;
 }
 
 /* /////////// */
@@ -146,6 +147,44 @@ h1{
     font-size: 0.6em;
     line-break: anywhere;
     margin: 0;
+}
+
+/* /////////// */
+/* PANEL 3 /// */
+/* /////////// */
+
+#panel-3 ul{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7em, 1fr));
+    gap: 0.5em;
+    list-style-type: none;
+    padding: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+#panel-3 .document-frame{
+    background-color: white;
+    border: 0.1em solid var(--color-accent);
+    color: #101010;
+    display: inline-block;
+    width: 5em;
+    height: 7em;
+    text-align: center;
+    corner-shape: superellipse(0);
+    border-top-left-radius: 1.5em;
+}
+
+#panel-3 button{
+    color: var(--color-secondary);
+}
+
+#panel-3 .music-icon{
+    font-size: 2em;
+    display: block;
+}
+
+#panel-3 .progress-bar{
+    width: 100%;
 }
 
 aside p{

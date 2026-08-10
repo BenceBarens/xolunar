@@ -6,9 +6,11 @@
 
 const GLOBAL_SETTINGS = {
     mediaUrl: '../media.json',
+    audioUrl: '../audio.json',
     imageQuality: 80,
     imageFormat: 'webp',
-    githubBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/Photo/'
+    githubBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/Photo/',
+    githubAudioBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/audio/'
 };
 
 const layout = { itemWidth: 400 }; 
@@ -44,6 +46,13 @@ function formatAlt(file) {
         .replace(/\//g, ' of ')
         .replace(/\s+/g, ' ')
         .trim();
+}
+
+function formatAudioTitle(file) {
+    let name = file.split('/').pop();
+    name = name.replace(/\.(mp3|wav|ogg|m4a|flac)$/i, '.mp3');
+    name = name.replace(/_/g, ' ');
+    return name;
 }
 
 // ==========================================
@@ -184,7 +193,135 @@ async function generateVideoLists() {
 }
 
 // ==========================================
+// AUDIO GALLERY
+// ==========================================
+
+function formatTime(seconds) {
+    if (isNaN(seconds)) return "0:00";
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+}
+
+async function generateAudioLists() {
+    try {
+        const response = await fetch(GLOBAL_SETTINGS.audioUrl);
+        const files = await response.json();
+
+        const ulInstrumentals = document.getElementById('list-audio-instrumentals');
+        const ulBeats = document.getElementById('list-audio-beats');
+        const ulOverig = document.getElementById('list-audio-overig');
+
+        files.forEach(file => {
+            const li = document.createElement('li');
+            li.className = 'audio-item';
+            
+            const titleElement = document.createElement('p');
+            titleElement.className = 'audio-title';
+            titleElement.textContent = formatAudioTitle(file);
+
+            const audioElement = document.createElement('audio');
+            audioElement.preload = 'metadata';
+            audioElement.src = `${GLOBAL_SETTINGS.githubAudioBaseUrl}${file}`;
+
+            const customPlayer = document.createElement('div');
+
+            const playBtn = document.createElement('button');
+            playBtn.className = 'play-btn';
+            playBtn.textContent = 'Play';
+
+            const progressBar = document.createElement('input');
+            progressBar.type = 'range';
+            progressBar.className = 'progress-bar';
+            progressBar.value = 0;
+            progressBar.min = 0;
+            progressBar.step = 0.1;
+
+            customPlayer.appendChild(playBtn);
+            customPlayer.appendChild(progressBar);
+
+            const docFrame = document.createElement('div');
+            docFrame.className = 'document-frame';
+            
+            docFrame.insertAdjacentHTML('afterbegin', '<span class="music-icon">&#9835; </span>');
+
+            const timeDisplay = document.createElement('span');
+            timeDisplay.className = 'time-display';
+            timeDisplay.textContent = '0:00 / 0:00';
+            
+            docFrame.appendChild(timeDisplay);
+
+            li.appendChild(docFrame);
+            li.appendChild(titleElement);
+            li.appendChild(audioElement);
+            li.appendChild(customPlayer);
+
+            // --- EVENT LISTENERS VOOR DE CONTROLS ---
+
+            playBtn.addEventListener('click', () => {
+                if (audioElement.paused) {
+                    audioElement.play();
+                } else {
+                    audioElement.pause();
+                }
+            });
+
+            audioElement.addEventListener('play', () => {
+                playBtn.textContent = 'Pause';
+            });
+
+            audioElement.addEventListener('pause', () => {
+                playBtn.textContent = 'Play';
+            });
+
+            audioElement.addEventListener('loadedmetadata', () => {
+                progressBar.max = audioElement.duration;
+                timeDisplay.textContent = `0:00 / ${formatTime(audioElement.duration)}`;
+            });
+
+            audioElement.addEventListener('timeupdate', () => {
+                progressBar.value = audioElement.currentTime;
+                timeDisplay.textContent = `${formatTime(audioElement.currentTime)} / ${formatTime(audioElement.duration)}`;
+            });
+
+            progressBar.addEventListener('input', () => {
+                audioElement.currentTime = progressBar.value;
+            });
+
+            audioElement.addEventListener('ended', () => {
+                playBtn.textContent = 'Play';
+                progressBar.value = 0;
+                audioElement.currentTime = 0;
+            });
+
+            if (file.startsWith('instrumentals/')) {
+                if(ulInstrumentals) ulInstrumentals.appendChild(li);
+            } else if (file.startsWith('beats/')) {
+                if(ulBeats) ulBeats.appendChild(li);
+            } else {
+                if(ulOverig) ulOverig.appendChild(li);
+            }
+        });
+
+    } catch (error) {
+        console.error("Fout bij het ophalen van audio:", error);
+    }
+}
+
+document.addEventListener('play', function(e) {
+    if (e.target.tagName === 'AUDIO') {
+        const audios = document.getElementsByTagName('audio');
+        for (let i = 0, len = audios.length; i < len; i++) {
+            if (audios[i] !== e.target) {
+                audios[i].pause();
+            }
+        }
+    }
+}, true);
+
+// ==========================================
 // INITIATION
 // ==========================================
 generateMediaLists();
 generateVideoLists();
+generateAudioLists();
