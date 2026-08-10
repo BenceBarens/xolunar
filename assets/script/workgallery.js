@@ -13,6 +13,11 @@ const GLOBAL_SETTINGS = {
 
 const layout = { itemWidth: 400 }; 
 
+const lightbox = document.querySelector('#lightbox');
+const lightboxMedia = document.querySelector('#lightbox-media');
+const lightboxTitle = document.querySelector('#lightbox-title');
+const lightboxClose = document.querySelector('#lightbox-close');
+
 // ==========================================
 // HELPER FUNCTIONS
 // ==========================================
@@ -42,7 +47,49 @@ function formatAlt(file) {
 }
 
 // ==========================================
-// GALLERY
+// LIGHTBOX LOGIC
+// ==========================================
+
+function openLightbox(file) {
+    lightboxMedia.innerHTML = '';
+    lightboxTitle.textContent = formatTitle(file);
+
+    if (file.startsWith('http')) {
+        const video = document.createElement('video');
+        // Zet lage resolutie Cloudinary URL om naar hogere resolutie (w_800)
+        video.src = file.replace(/w_\d+,h_\d+,c_[a-z]+,/, 'w_800,q_auto,f_auto/');
+        video.autoplay = true;
+        video.playsInline = true;
+        video.loop = true;
+        lightboxMedia.appendChild(video);
+    } else {
+        const img = document.createElement('img');
+        const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
+        img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=800&output=${GLOBAL_SETTINGS.imageFormat}&q=80`;
+        img.alt = formatAlt(file);
+        lightboxMedia.appendChild(img);
+    }
+    
+    lightbox.showModal();
+}
+
+function closeLightbox() {
+    lightbox.close();
+}
+
+lightbox.addEventListener('close', () => {
+    lightboxMedia.innerHTML = '';
+});
+
+lightboxClose.addEventListener('click', closeLightbox);
+
+lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+});
+
+
+// ==========================================
+// PHOTO GALLERY
 // ==========================================
 
 async function generateMediaLists() {
@@ -56,6 +103,7 @@ async function generateMediaLists() {
 
         files.forEach(file => {
             const li = document.createElement('li');
+            li.addEventListener('click', () => openLightbox(file));
             
             const img = document.createElement('img');
             const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
@@ -84,7 +132,6 @@ async function generateMediaLists() {
     }
 }
 
-generateMediaLists();
 
 // ==========================================
 // VIDEO GALLERY
@@ -104,6 +151,7 @@ async function generateVideoLists() {
             const folder = item.folder || 'overig';
 
             const li = document.createElement('li');
+            li.addEventListener('click', () => openLightbox(url));
             
             const mediaElement = document.createElement('video');
             mediaElement.src = url;
@@ -135,4 +183,8 @@ async function generateVideoLists() {
     }
 }
 
+// ==========================================
+// INITIATION
+// ==========================================
+generateMediaLists();
 generateVideoLists();

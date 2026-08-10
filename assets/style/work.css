@@ -99,6 +99,7 @@ h1{
 #portfolio-container ul li{
     transition: all 100ms ease;
     height: fit-content;
+    cursor: pointer;
 }
 
 /* /////////// */
