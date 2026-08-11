@@ -122,7 +122,7 @@ h1{
 }
 
 #panel-1 ul p{
-    font-size: 0.6em;
+    font-size: 0.7em;
     line-break: anywhere;
     margin: 0;
 }
@@ -144,7 +144,7 @@ h1{
 }
 
 #panel-2 ul p{
-    font-size: 0.6em;
+    font-size: 0.7em;
     line-break: anywhere;
     margin: 0;
 }
@@ -153,38 +153,106 @@ h1{
 /* PANEL 3 /// */
 /* /////////// */
 
-#panel-3 ul{
+#panel-3 ul {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(7em, 1fr));
-    gap: 0.5em;
+    grid-template-columns: repeat(auto-fill, minmax(18em, 1fr));
+    gap: 1.5em;
     list-style-type: none;
     padding: 0;
-    font-variant-numeric: tabular-nums;
 }
 
-#panel-3 .document-frame{
-    background-color: white;
-    border: 0.1em solid var(--color-accent);
-    color: #101010;
-    display: inline-block;
-    width: 5em;
-    height: 7em;
-    text-align: center;
-    corner-shape: superellipse(0);
-    border-top-left-radius: 1.5em;
-}
-
-#panel-3 button{
+#panel-3 .audio-card {
+    background-color: var(--color-primary);
     color: var(--color-secondary);
+    border: 0.15em solid var(--color-secondary);
+    box-shadow: 0.2em 0.2em 0 var(--color-secondary);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 0.8em;
+    transition: all 100ms ease;
 }
 
-#panel-3 .music-icon{
-    font-size: 2em;
-    display: block;
+#panel-3 .audio-card:hover{
+    transform: translate(-0.1em, -0.1em);
+    box-shadow: 0.3em 0.3em 0 var(--color-accent);
+}
+
+#panel-3 .audio-card:hover .audio-title{
+    color: var(--color-accent);
+}
+
+#panel-3 .play-btn{
+    flex-shrink: 0;
+    width: 2.5em;
+    height: 2.5em;
+    font-size: 1.2em;
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 0.2em;
+}
+
+#panel-3 .audio-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+    min-width: 0;
+}
+
+#panel-3 .audio-title {
+    font-size: 0.85em;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+#panel-3 .track-ui {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    width: 100%;
+}
+
+#panel-3 .time-display{
+    font-variant-numeric: tabular-nums;
+    font-size: 0.7em;
+    flex-shrink: 0;
 }
 
 #panel-3 .progress-bar{
+    flex-grow: 1;
     width: 100%;
+    height: 0.2em;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #dfdfdf;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+#panel-3 .progress-bar::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1em;
+    height: 1em;
+    background: var(--color-primary);
+    border: 0.15em solid var(--color-accent);
+    border-radius: 50%;
+    cursor: grab;
+}
+
+#panel-3 .progress-bar::-moz-range-thumb{
+    width: 1em;
+    height: 1em;
+    background: var(--color-primary);
+    border: 0.15em solid var(--color-accent);
+    border-radius: 50%;
+    cursor: grab;
 }
 
 aside p{

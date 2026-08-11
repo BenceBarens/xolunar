@@ -214,21 +214,31 @@ async function generateAudioLists() {
 
         files.forEach(file => {
             const li = document.createElement('li');
-            li.className = 'audio-item';
+            li.className = 'audio-card';
             
-            const titleElement = document.createElement('p');
-            titleElement.className = 'audio-title';
-            titleElement.textContent = formatAudioTitle(file);
-
             const audioElement = document.createElement('audio');
             audioElement.preload = 'metadata';
             audioElement.src = `${GLOBAL_SETTINGS.githubAudioBaseUrl}${file}`;
 
-            const customPlayer = document.createElement('div');
-
             const playBtn = document.createElement('button');
             playBtn.className = 'play-btn';
-            playBtn.textContent = 'Play';
+            playBtn.textContent = '▶';
+            playBtn.setAttribute('aria-label', `Speel ${formatAudioTitle(file)} af`);
+
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'audio-info';
+
+            const titleElement = document.createElement('p');
+            titleElement.className = 'audio-title';
+            titleElement.innerHTML = `${formatAudioTitle(file)}`;
+            titleElement.title = formatAudioTitle(file);
+
+            const trackUI = document.createElement('div');
+            trackUI.className = 'track-ui';
+
+            const timeCurrent = document.createElement('span');
+            timeCurrent.className = 'time-display';
+            timeCurrent.textContent = '0:00';
 
             const progressBar = document.createElement('input');
             progressBar.type = 'range';
@@ -236,27 +246,24 @@ async function generateAudioLists() {
             progressBar.value = 0;
             progressBar.min = 0;
             progressBar.step = 0.1;
+            progressBar.setAttribute('aria-label', 'Tijdlijn');
 
-            customPlayer.appendChild(playBtn);
-            customPlayer.appendChild(progressBar);
+            const timeTotal = document.createElement('span');
+            timeTotal.className = 'time-display';
+            timeTotal.textContent = '0:00';
 
-            const docFrame = document.createElement('div');
-            docFrame.className = 'document-frame';
-            
-            docFrame.insertAdjacentHTML('afterbegin', '<span class="music-icon">&#9835; </span>');
+            trackUI.appendChild(timeCurrent);
+            trackUI.appendChild(progressBar);
+            trackUI.appendChild(timeTotal);
 
-            const timeDisplay = document.createElement('span');
-            timeDisplay.className = 'time-display';
-            timeDisplay.textContent = '0:00 / 0:00';
-            
-            docFrame.appendChild(timeDisplay);
+            infoContainer.appendChild(titleElement);
+            infoContainer.appendChild(trackUI);
 
-            li.appendChild(docFrame);
-            li.appendChild(titleElement);
+            li.appendChild(playBtn);
+            li.appendChild(infoContainer);
             li.appendChild(audioElement);
-            li.appendChild(customPlayer);
 
-            // --- EVENT LISTENERS VOOR DE CONTROLS ---
+            // --- EVENT LISTENERS ---
 
             playBtn.addEventListener('click', () => {
                 if (audioElement.paused) {
@@ -267,21 +274,21 @@ async function generateAudioLists() {
             });
 
             audioElement.addEventListener('play', () => {
-                playBtn.textContent = 'Pause';
+                playBtn.textContent = '⏸';
             });
 
             audioElement.addEventListener('pause', () => {
-                playBtn.textContent = 'Play';
+                playBtn.textContent = '▶';
             });
 
             audioElement.addEventListener('loadedmetadata', () => {
                 progressBar.max = audioElement.duration;
-                timeDisplay.textContent = `0:00 / ${formatTime(audioElement.duration)}`;
+                timeTotal.textContent = formatTime(audioElement.duration);
             });
 
             audioElement.addEventListener('timeupdate', () => {
                 progressBar.value = audioElement.currentTime;
-                timeDisplay.textContent = `${formatTime(audioElement.currentTime)} / ${formatTime(audioElement.duration)}`;
+                timeCurrent.textContent = formatTime(audioElement.currentTime);
             });
 
             progressBar.addEventListener('input', () => {
@@ -289,7 +296,7 @@ async function generateAudioLists() {
             });
 
             audioElement.addEventListener('ended', () => {
-                playBtn.textContent = 'Play';
+                playBtn.textContent = '▶';
                 progressBar.value = 0;
                 audioElement.currentTime = 0;
             });
