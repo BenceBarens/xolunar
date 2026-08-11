@@ -90,15 +90,21 @@
                 <h2 class="visually-hidden scramble">Audio portfolio</h2>
                 <details name="audio" open>
                     <summary class="scramble">/beats</summary>
-                    <p>Beats here</p>
+                    <ul id="list-audio-beats"></ul>
                 </details>
                 <details name="audio">
                     <summary class="scramble">/instrumentals</summary>
-                    <p>Instrumentals here</p>
+                    <ul id="list-audio-instrumentals"></ul>
                 </details>
             </section>
         </div>
     </main>
+
+    <dialog id="lightbox">
+        <button id="lightbox-close" aria-label="Close" type="button">&times;</button>
+        <div id="lightbox-media"></div>
+        <p id="lightbox-title"></p>
+    </dialog>
 
     <canvas id="y2k-grid" aria-hidden="true"></canvas>
 

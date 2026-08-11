@@ -165,7 +165,7 @@ const ctx = canvas.getContext('2d');
 const GRID_SIZE = 20;
 const TILE_RADIUS = 4;
 const HOVER_RADIUS = 150;
-const GLITCH_CHANCE = 0.00001;
+const GLITCH_CHANCE = 0.000005;
 
 let cols = 0;
 let rows = 0;
@@ -334,7 +334,7 @@ function animate() {
             const randomTile = tiles[Math.floor(Math.random() * tiles.length)];
             if (randomTile && !randomTile.isGlitching) {
                 randomTile.isGlitching = true;
-                randomTile.glitchTimer = Math.floor(Math.random() * 8) + 4;
+                randomTile.glitchTimer = Math.floor(Math.random() * 10) + 4;
             }
         }
 
