@@ -7,6 +7,13 @@ tabs.forEach((tab, index) => {
     tab.addEventListener('click', () => {
         if (index === currentIndex) return; 
 
+        const allMedia = document.querySelectorAll('audio, video');
+        allMedia.forEach(media => {
+            if (!media.paused) {
+                media.pause();
+            }
+        });
+
         const isMovingRight = index > currentIndex;
 
         tabs.forEach(t => {
