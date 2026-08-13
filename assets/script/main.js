@@ -7,10 +7,18 @@ const characters = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!@#$%^&*
 // SCRAMBLE FUNCTIE (Globaal beschikbaar) ///////////////////////////////////////
 
 function scramble(element, reverse = false) {
-    const originalText = element.innerText;
+    if (!element.dataset.originalText) {
+        element.dataset.originalText = element.innerText;
+    }
+    const originalText = element.dataset.originalText;
+    
+    if (element.scrambleInterval) {
+        clearInterval(element.scrambleInterval);
+    }
+    
     let iteration = 0;
     
-    const interval = setInterval(() => {
+    element.scrambleInterval = setInterval(() => {
         element.innerText = originalText
             .split("")
             .map((letter, index) => {
@@ -23,8 +31,12 @@ function scramble(element, reverse = false) {
             })
             .join("");
         
-        if (iteration >= originalText.length) clearInterval(interval);
-        iteration += 3;
+        if (iteration >= originalText.length) {
+            clearInterval(element.scrambleInterval);
+            element.innerText = originalText;
+        }
+        
+        iteration += 2;
     }, 80);
 }
 
