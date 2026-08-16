@@ -20,6 +20,9 @@ const lightboxMedia = document.querySelector('#lightbox-media');
 const lightboxTitle = document.querySelector('#lightbox-title');
 const lightboxClose = document.querySelector('#lightbox-close');
 
+const iconPlay = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+const iconPause = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
 // ==========================================
 // HELPER FUNCTIONS
 // ==========================================
@@ -222,7 +225,7 @@ async function generateAudioLists() {
 
             const playBtn = document.createElement('button');
             playBtn.className = 'play-btn';
-            playBtn.textContent = '▶';
+            playBtn.innerHTML = iconPlay;
             playBtn.setAttribute('aria-label', `Speel ${formatAudioTitle(file)} af`);
 
             const infoContainer = document.createElement('div');
@@ -274,11 +277,11 @@ async function generateAudioLists() {
             });
 
             audioElement.addEventListener('play', () => {
-                playBtn.textContent = '⏸';
+                playBtn.innerHTML = iconPause;
             });
 
             audioElement.addEventListener('pause', () => {
-                playBtn.textContent = '▶';
+                playBtn.innerHTML = iconPlay; //
             });
 
             audioElement.addEventListener('loadedmetadata', () => {
@@ -296,7 +299,7 @@ async function generateAudioLists() {
             });
 
             audioElement.addEventListener('ended', () => {
-                playBtn.textContent = '▶';
+                playBtn.innerHTML = iconPlay;
                 progressBar.value = 0;
                 audioElement.currentTime = 0;
             });
