@@ -56,10 +56,10 @@ function formatAlt(file) {
 // ==========================================
 function getLayoutSettings() {
     const width = window.innerWidth;
-    if (width < 600) return { id: 'mobile', rings: 3, slotsPerRing: 16, ringSpacing: 180, itemWidth: 100, itemHeight: 120 };
-    if (width < 900) return { id: 'tablet', rings: 3, slotsPerRing: 16, ringSpacing: 240, itemWidth: 140, itemHeight: 160 };
-    if (width < 1600) return { id: 'desktop', rings: 3, slotsPerRing: 20, ringSpacing: 300, itemWidth: 200, itemHeight: 200 };
-    return { id: 'ultrawide', rings: 3, slotsPerRing: 32, ringSpacing: 350, itemWidth: 240, itemHeight: 240 };
+    if (width < 600) return { id: 'mobile', rings: 3, slotsPerRing: 16, ringSpacing: 180, itemWidth: 120, itemHeight: 120 };
+    if (width < 900) return { id: 'tablet', rings: 3, slotsPerRing: 16, ringSpacing: 200, itemWidth: 140, itemHeight: 140 };
+    if (width < 1600) return { id: 'desktop', rings: 3, slotsPerRing: 20, ringSpacing: 260, itemWidth: 180, itemHeight: 180 };
+    return { id: 'ultrawide', rings: 3, slotsPerRing: 32, ringSpacing: 320, itemWidth: 240, itemHeight: 240 };
 }
 
 async function loadMedia() {
@@ -101,7 +101,7 @@ function createMediaElement(file, layout, prefersReducedMotion) {
         // Foto config
         mediaElement = document.createElement('img');
         const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
-        mediaElement.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${layout.itemWidth}&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
+        mediaElement.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${layout.itemWidth}&h=${layout.itemHeight}&fit=cover&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
         mediaElement.alt = `Portfolio: ${formatAlt(file)}`;
     }
     return mediaElement;
