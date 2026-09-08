@@ -20,7 +20,8 @@ header nav a{
 
 header p{
     margin: 0 auto;
-    padding: 0 0.5em;
+    padding: 0.4em 0.7em;
+    border-radius: 50em;
     text-align: center;
     width: max-content;
     max-width: 100%;
