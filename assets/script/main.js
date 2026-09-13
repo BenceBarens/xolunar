@@ -161,8 +161,12 @@ if (!prefersReducedMotion) {
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('a.scramble, button.scramble').forEach(el => {
             
+            const text = el.innerText;
+            el.innerHTML = `<span style="pointer-events: none;">${text}</span>`;
+            const textTarget = el.querySelector('span');
+            
             el.addEventListener('mouseenter', function() {
-                scramble(this);
+                scramble(textTarget);
             });
             
         });
