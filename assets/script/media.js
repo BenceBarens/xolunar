@@ -56,10 +56,10 @@ function formatAlt(file) {
 // ==========================================
 function getLayoutSettings() {
     const width = window.innerWidth;
-    if (width < 600) return { id: 'mobile', rings: 3, slotsPerRing: 16, ringSpacing: 180, itemWidth: 120, itemHeight: 120 };
-    if (width < 900) return { id: 'tablet', rings: 3, slotsPerRing: 16, ringSpacing: 200, itemWidth: 140, itemHeight: 140 };
-    if (width < 1600) return { id: 'desktop', rings: 3, slotsPerRing: 20, ringSpacing: 260, itemWidth: 180, itemHeight: 180 };
-    return { id: 'ultrawide', rings: 3, slotsPerRing: 32, ringSpacing: 320, itemWidth: 240, itemHeight: 240 };
+    if (width < 600) return { id: 'mobile', rings: 3, slotsPerRing: 16, itemSize: 120 };
+    if (width < 900) return { id: 'tablet', rings: 3, slotsPerRing: 16, itemSize: 140 };
+    if (width < 1600) return { id: 'desktop', rings: 3, slotsPerRing: 20, itemSize: 180 };
+    return { id: 'ultrawide', rings: 3, slotsPerRing: 32, itemSize: 240 };
 }
 
 async function loadMedia() {
@@ -101,7 +101,7 @@ function createMediaElement(file, layout, prefersReducedMotion) {
         // Foto config
         mediaElement = document.createElement('img');
         const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
-        mediaElement.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${layout.itemWidth}&h=${layout.itemHeight}&fit=cover&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
+        mediaElement.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${layout.itemSize}&h=${layout.itemSize}&fit=cover&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
         mediaElement.alt = `Portfolio: ${formatAlt(file)}`;
     }
     return mediaElement;
@@ -115,16 +115,17 @@ function setupCarousel() {
     const layout = getLayoutSettings();
     currentLayoutId = layout.id; 
 
-    stage.style.setProperty('--item-width', `${layout.itemWidth}px`);
-    stage.style.setProperty('--item-height', `${layout.itemHeight}px`);
+    stage.style.setProperty('--item-size', `${layout.itemSize}px`);
 
-    const startOffset = -((layout.rings - 1) / 2) * layout.ringSpacing;
+    const itemSpacing = layout.itemSize + 40; 
+    const startOffset = -((layout.rings - 1) / 2) * itemSpacing;
+    
     let globalMediaIndex = 0;
 
     for (let r = 0; r < layout.rings; r++) {
         const ringEl = document.createElement('ul');
         ringEl.className = 'ring';
-        ringEl.style.setProperty('--row-offset', `${startOffset + (r * layout.ringSpacing)}px`);
+        ringEl.style.setProperty('--row-offset', `${startOffset + (r * itemSpacing)}px`);
 
         for (let s = 0; s < layout.slotsPerRing; s++) {
             const li = document.createElement('li');
@@ -137,12 +138,7 @@ function setupCarousel() {
             const mediaElement = createMediaElement(file, layout, prefersReducedMotion);
             li.addEventListener('click', () => openLightbox(file));
 
-            const title = document.createElement('span');
-            title.className = 'photo-title';
-            title.textContent = formatTitle(file);
-
             li.appendChild(mediaElement);
-            li.appendChild(title);
             ringEl.appendChild(li);
         }
         stage.appendChild(ringEl);
@@ -152,7 +148,7 @@ function setupCarousel() {
 
 function updateGeometry(layout) {
     const angle = 360 / layout.slotsPerRing;
-    const itemSpacing = layout.itemWidth + 40; 
+    const itemSpacing = layout.itemSize + 40; 
     const radius = Math.round((itemSpacing / 2) / Math.tan(Math.PI / layout.slotsPerRing));
 
     stage.style.setProperty('--angle', `${angle}deg`);
