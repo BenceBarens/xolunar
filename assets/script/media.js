@@ -45,6 +45,7 @@ function formatAlt(file) {
         .replace(/\.[^/.]+$/, '')
         .replace(/\([^)]*\)|\[[^\]]*\]/g, '')
         .replace(/\d/g, '')
+        .replace(/_/g, ' ')
         .replace(/\//g, ' of ')
         .replace(/\s+/g, ' ')
         .trim();
