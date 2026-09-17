@@ -1,113 +1,22 @@
 // Website Made by Bence (bencebarens.nl)
 
 // ==========================================
-// SETTINGS & GLOBALS
+// WORK GALLERY (LISTS & AUDIO)
 // ==========================================
 
-const GLOBAL_SETTINGS = {
-    mediaUrl: '../media.json',
-    audioUrl: '../audio.json',
-    imageQuality: 80,
-    imageFormat: 'webp',
-    githubBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/Photo/',
-    githubAudioBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/audio/'
-};
+const MEDIA_URL = '../media.json';
+const VIDEOS_URL = '../videos.json';
+const AUDIO_URL = '../audio.json';
 
-const layout = { itemWidth: 400 }; 
-
-const lightbox = document.querySelector('#lightbox');
-const lightboxMedia = document.querySelector('#lightbox-media');
-const lightboxTitle = document.querySelector('#lightbox-title');
-const lightboxClose = document.querySelector('#lightbox-close');
+const workLayout = { itemWidth: 400 };
 
 const iconPlay = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
 const iconPause = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
-// ==========================================
-// HELPER FUNCTIONS
-// ==========================================
-
-function isVideoFile(fileName) {
-    return /\.(mp4|webm|mov|avi|mkv)$/i.test(fileName);
-}
-
-function formatTitle(file) {
-    const rawFileName = file.split('/').pop().split('?')[0];
-    const isVideo = isVideoFile(rawFileName);
-    
-    return rawFileName
-        .replace(/\.[^/.]+$/, isVideo ? '.mp4' : '.jpg')
-        .toLowerCase()
-        .replace(/ /g, '_');
-}
-
-function formatAlt(file) {
-    return file
-        .replace(/\.[^/.]+$/, '')
-        .replace(/\([^)]*\)|\[[^\]]*\]/g, '')
-        .replace(/\d/g, '')
-        .replace(/_/g, ' ')
-        .replace(/\//g, ' of ')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function formatAudioTitle(file) {
-    let name = file.split('/').pop();
-    name = name.replace(/\.(mp3|wav|ogg|m4a|flac)$/i, '.mp3');
-    name = name.replace(/_/g, ' ');
-    return name;
-}
-
-// ==========================================
-// LIGHTBOX LOGIC
-// ==========================================
-
-function openLightbox(file) {
-    lightboxMedia.innerHTML = '';
-    lightboxTitle.textContent = formatTitle(file);
-
-    if (file.startsWith('http')) {
-        const video = document.createElement('video');
-        // Zet lage resolutie Cloudinary URL om naar hogere resolutie (w_800)
-        video.src = file.replace(/w_\d+,h_\d+,c_[a-z]+,/, 'w_800,q_auto,f_auto/');
-        video.autoplay = true;
-        video.playsInline = true;
-        video.loop = true;
-        lightboxMedia.appendChild(video);
-    } else {
-        const img = document.createElement('img');
-        const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
-        img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=800&output=${GLOBAL_SETTINGS.imageFormat}&q=80`;
-        img.alt = formatAlt(file);
-        lightboxMedia.appendChild(img);
-    }
-    
-    lightbox.showModal();
-}
-
-function closeLightbox() {
-    lightbox.close();
-}
-
-lightbox.addEventListener('close', () => {
-    lightboxMedia.innerHTML = '';
-});
-
-lightboxClose.addEventListener('click', closeLightbox);
-
-lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
-});
-
-
-// ==========================================
-// PHOTO GALLERY
-// ==========================================
-
+// Media lijsten
 async function generateMediaLists() {
     try {
-        const response = await fetch(GLOBAL_SETTINGS.mediaUrl);
+        const response = await fetch(MEDIA_URL);
         const files = await response.json();
 
         const ulPhoto = document.getElementById('list-photo');
@@ -116,14 +25,15 @@ async function generateMediaLists() {
 
         files.forEach(file => {
             const li = document.createElement('li');
-            li.addEventListener('click', () => openLightbox(file));
-            
+
             const img = document.createElement('img');
             const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
-            
-            img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${layout.itemWidth}&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
-            img.loading = "lazy"; 
+
+            img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${workLayout.itemWidth}&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
+            img.loading = "lazy";
             img.alt = formatAlt(file);
+
+            li.addEventListener('click', () => openLightbox(file, img));
 
             const titleElement = document.createElement('p');
             titleElement.textContent = formatTitle(file);
@@ -132,11 +42,11 @@ async function generateMediaLists() {
             li.appendChild(titleElement);
 
             if (file.startsWith('photo/')) {
-                ulPhoto.appendChild(li);
+                if (ulPhoto) ulPhoto.appendChild(li);
             } else if (file.startsWith('cover art/')) {
-                ulCoverArt.appendChild(li);
+                if (ulCoverArt) ulCoverArt.appendChild(li);
             } else {
-                ulOverig.appendChild(li);
+                if (ulOverig) ulOverig.appendChild(li);
             }
         });
 
@@ -145,15 +55,11 @@ async function generateMediaLists() {
     }
 }
 
-
-// ==========================================
-// VIDEO GALLERY
-// ==========================================
-
+// Video lijsten
 async function generateVideoLists() {
     try {
-        const response = await fetch('../videos.json');
-        const items = await response.json(); 
+        const response = await fetch(VIDEOS_URL);
+        const items = await response.json();
 
         const ulCanvas = document.getElementById('list-video-map1'); 
         const ulClip = document.getElementById('list-video-overig'); 
@@ -164,8 +70,7 @@ async function generateVideoLists() {
             const folder = item.folder || 'overig';
 
             const li = document.createElement('li');
-            li.addEventListener('click', () => openLightbox(url));
-            
+
             const mediaElement = document.createElement('video');
             mediaElement.src = url;
             mediaElement.poster = url.replace('/upload/', '/upload/so_2/').replace(/\.(mp4|webm|mov)$/i, '.jpg');
@@ -175,6 +80,8 @@ async function generateVideoLists() {
             mediaElement.setAttribute('muted', ''); 
             mediaElement.setAttribute('playsinline', ''); 
             mediaElement.autoplay = !prefersReducedMotion;
+
+            li.addEventListener('click', () => openLightbox(url, mediaElement));
 
             const titleElement = document.createElement('p');
             titleElement.textContent = formatTitle(url);
@@ -196,10 +103,7 @@ async function generateVideoLists() {
     }
 }
 
-// ==========================================
-// AUDIO GALLERY
-// ==========================================
-
+// Audio speler
 function formatTime(seconds) {
     if (isNaN(seconds)) return "0:00";
     const min = Math.floor(seconds / 60);
@@ -209,7 +113,7 @@ function formatTime(seconds) {
 
 async function generateAudioLists() {
     try {
-        const response = await fetch(GLOBAL_SETTINGS.audioUrl);
+        const response = await fetch(AUDIO_URL);
         const files = await response.json();
 
         const ulInstrumentals = document.getElementById('list-audio-instrumentals');
@@ -282,7 +186,7 @@ async function generateAudioLists() {
             });
 
             audioElement.addEventListener('pause', () => {
-                playBtn.innerHTML = iconPlay; //
+                playBtn.innerHTML = iconPlay;
             });
 
             audioElement.addEventListener('loadedmetadata', () => {
