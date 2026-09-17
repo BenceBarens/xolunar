@@ -63,23 +63,59 @@ function formatAudioTitle(file) {
 // LIGHTBOX LOGIC
 // ==========================================
 
-function openLightbox(file) {
+function openLightbox(file, sourceMediaElement) {
     lightboxMedia.innerHTML = '';
     lightboxTitle.textContent = formatTitle(file);
 
-    if (file.startsWith('http')) {
+    const isVideo = file.startsWith('http');
+
+    if (sourceMediaElement) {
+        const placeholder = sourceMediaElement.cloneNode(true);
+        placeholder.className = 'media-placeholder';
+        placeholder.removeAttribute('style');
+
+        if (isVideo) {
+            placeholder.muted = true;
+            placeholder.removeAttribute('autoplay');
+            placeholder.pause?.();
+        }
+        lightboxMedia.appendChild(placeholder);
+    }
+
+    if (isVideo) {
         const video = document.createElement('video');
-        // Zet lage resolutie Cloudinary URL om naar hogere resolutie (w_800)
+        video.className = 'media-full';
         video.src = file.replace(/w_\d+,h_\d+,c_[a-z]+,/, 'w_800,q_auto,f_auto/');
-        video.autoplay = true;
+        video.autoplay = !prefersReducedMotion;
         video.playsInline = true;
         video.loop = true;
+
+        video.addEventListener('canplay', () => {
+            video.classList.add('is-loaded');
+            const ph = lightboxMedia.querySelector('.media-placeholder');
+            if (ph) ph.style.opacity = '0';
+        }, { once: true });
+
         lightboxMedia.appendChild(video);
     } else {
         const img = document.createElement('img');
+        img.className = 'media-full';
+        img.alt = formatAlt(file);
         const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
         img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=800&output=${GLOBAL_SETTINGS.imageFormat}&q=80`;
-        img.alt = formatAlt(file);
+
+        const onLoaded = () => {
+            img.classList.add('is-loaded');
+            const ph = lightboxMedia.querySelector('.media-placeholder');
+            if (ph) ph.style.opacity = '0';
+        };
+
+        if (img.complete) {
+            onLoaded();
+        } else {
+            img.addEventListener('load', onLoaded, { once: true });
+        }
+
         lightboxMedia.appendChild(img);
     }
     
@@ -116,7 +152,7 @@ async function generateMediaLists() {
 
         files.forEach(file => {
             const li = document.createElement('li');
-            li.addEventListener('click', () => openLightbox(file));
+            li.addEventListener('click', () => openLightbox(file, img));
             
             const img = document.createElement('img');
             const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
@@ -164,7 +200,7 @@ async function generateVideoLists() {
             const folder = item.folder || 'overig';
 
             const li = document.createElement('li');
-            li.addEventListener('click', () => openLightbox(url));
+            li.addEventListener('click', () => openLightbox(url, mediaElement));
             
             const mediaElement = document.createElement('video');
             mediaElement.src = url;
@@ -282,7 +318,7 @@ async function generateAudioLists() {
             });
 
             audioElement.addEventListener('pause', () => {
-                playBtn.innerHTML = iconPlay; //
+                playBtn.innerHTML = iconPlay;
             });
 
             audioElement.addEventListener('loadedmetadata', () => {
