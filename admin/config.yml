@@ -1,0 +1,34 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/media"
+public_folder: "/assets/media"
+
+collections:
+  - name: "media_beheer"
+    label: "Media Uploads"
+    files:
+      - label: "Foto's Beheer"
+        name: "photos"
+        file: "assets/media/photos_meta.json"
+        media_folder: "Photo"
+        public_folder: "Photo"
+        fields:
+          - label: "Foto's"
+            name: "photos_list"
+            widget: "list"
+            summary: "{{fields.photo}}"
+            field: { label: "Foto", name: "photo", widget: "image" }
+
+      - label: "Audio Beheer"
+        name: "audio"
+        file: "assets/media/audio_meta.json"
+        media_folder: "audio"
+        public_folder: "audio"
+        fields:
+          - label: "Audiobestanden"
+            name: "audio_list"
+            widget: "list"
+            summary: "{{fields.audio_file}}"
+            field: { label: "Geluidsbestand", name: "audio_file", widget: "file" }
