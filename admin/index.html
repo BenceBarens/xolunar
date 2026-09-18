@@ -17,22 +17,20 @@
     <style>
         body{ max-width: 40em; margin: auto; margin-top: 2em; }
         label, .file-section span { display: block; padding-top: 1em; padding-bottom: 1em; font-weight: 800; text-align: center;}
-        select, input[type="file"], button { width: 100%; padding: 0.5em; border-radius: 0.5em; border: 0.1em solid var(--color-secondary); }
+        select, input[type="file"], input[type="password"], button { color: var(--color-primary); width: 100%; padding: 0.5em; border-radius: 0.5em; border: 0.1em solid var(--color-secondary); box-sizing: border-box; }
         button { background: #0066cc; color: white; border: none; margin-top: 16px; padding: 0.5em 1em; font-weight: 600; width: fit-content;}
         button:disabled { background: #999; cursor: not-allowed; }
-        #status { margin-top: 16px; padding: 10px; border-radius: 1em; display: none; }
+        #status { margin-top: 2em; padding: 1em; border-radius: 0.5em; display: none; }
         .success { background: #e6f4ea; color: #137333; }
         .error { background: #fce8e6; color: #c5221f; }
         
         .file-section, .adding-file { margin-top: 3em; border-top: 0.1em solid var(--color-secondary); }
-        .file-list { list-style: none; padding: 0; margin: 12px 0 0 0; }
-        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 0.1em solid var(--color-secondary); }
+        .file-list { list-style: none; padding: 0; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5em 0; border-bottom: 0.1em solid var(--color-secondary); }
         .file-item:last-child { border-bottom: none; }
-        .file-name { font-family: monospace; font-size: 0.9em; word-break: break-all; margin-right: 12px; }
+        .file-name { font-family: monospace; word-break: break-all; margin-right: 12px; }
         .btn-delete { margin-top: 0; background: none; border: 0.1em solid var(--color-secondary); }
     </style>
-
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
     <meta name="theme-color" content="#ff0000">
@@ -41,11 +39,14 @@
     <h1>Media manager</h1>
 
     <div id="auth-state">
-    <button onclick="netlifyIdentity.open()" type="button">Login</button>
+        <label for="token-input">GitHub Personal Access Token</label>
+        <input type="password" id="token-input" placeholder="github_pat_..." autocomplete="current-password">
+        <button onclick="loginWithToken()" type="button">Login</button>
+        <div id="login-status"></div>
     </div>
 
     <div id="dashboard" style="display: none;">
-        <p>Logged in as <strong id="user-email"></strong> (<a href="#" onclick="netlifyIdentity.logout()">log out</a>)</p>
+        <p><a href="#" onclick="logout()">Log out</a></p>
 
         <label for="folder">Select folder</label>
         <select id="folder" onchange="loadFiles()">
@@ -58,7 +59,7 @@
         <div class="adding-file">
             <label for="file">Add file to folder</label>
             <input type="file" id="file">
-
+            <p>Note: make sure to only upload .webp in photo folders and .mp4 in audio folders. When uploading images, try to make them 1950px or smaller.</p>
             <button id="upload-btn" onclick="uploadFile()" type="button">Upload file</button>
             <div id="status"></div>
         </div>
@@ -69,170 +70,6 @@
         </div>
     </div>
 
-    <script>
-        const statusBox = document.getElementById('status');
-        const uploadBtn = document.getElementById('upload-btn');
-        const fileListElement = document.getElementById('file-list');
-        const branch = 'main';
-
-        netlifyIdentity.on('init', handleAuth);
-        netlifyIdentity.on('login', () => { handleAuth(); netlifyIdentity.close(); });
-        netlifyIdentity.on('logout', handleAuth);
-
-        function handleAuth() {
-        const user = netlifyIdentity.currentUser();
-        if (user) {
-            document.getElementById('auth-state').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('user-email').innerText = user.email;
-            loadFiles();
-        } else {
-            document.getElementById('auth-state').style.display = 'block';
-            document.getElementById('dashboard').style.display = 'none';
-        }
-        }
-
-        async function loadFiles() {
-        const user = netlifyIdentity.currentUser();
-        if (!user) return;
-
-        const folder = document.getElementById('folder').value;
-        fileListElement.innerHTML = '<li>Loading...</li>';
-
-        try {
-            const token = await user.jwt();
-            const res = await fetch(`/.netlify/git/github/contents/${encodeURIComponent(folder)}?ref=${branch}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (res.status === 404) {
-            fileListElement.innerHTML = '<li class="empty-msg">Folder is empty or non-existent.</li>';
-            return;
-            }
-
-            if (!res.ok) throw new Error("Couldn't fetch files.");
-
-            const data = await res.json();
-            const files = Array.isArray(data) ? data.filter(item => item.type === 'file') : [];
-
-            if (files.length === 0) {
-            fileListElement.innerHTML = '<li class="empty-msg">No files found in this folder</li>';
-            return;
-            }
-
-            fileListElement.innerHTML = '';
-            files.forEach(file => {
-            const li = document.createElement('li');
-            li.className = 'file-item';
-            li.innerHTML = `
-                <span class="file-name">${file.name}</span>
-                <button class="btn-delete" onclick="deleteFile('${file.name}', '${file.sha}')">Delete</button>
-            `;
-            fileListElement.appendChild(li);
-            });
-        } catch (err) {
-            fileListElement.innerHTML = `<li class="empty-msg">Error loading: ${err.message}</li>`;
-        }
-        }
-
-        async function uploadFile() {
-        const user = netlifyIdentity.currentUser();
-        const fileInput = document.getElementById('file');
-        const folder = document.getElementById('folder').value;
-
-        if (!fileInput.files.length) {
-            showStatus('Choose a file', 'error');
-            return;
-        }
-
-        const file = fileInput.files[0];
-        const filePath = `${folder}/${file.name}`;
-        
-        uploadBtn.disabled = true;
-        showStatus('Uploading and committing GitHub...', '');
-
-        try {
-            const base64Content = await toBase64(file);
-            const token = await user.jwt();
-
-            const res = await fetch(`/.netlify/git/github/contents/${filePath}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: `CONTENT: uploaded ${file.name} to ${folder}`,
-                content: base64Content.split(',')[1],
-                branch: branch
-            })
-            });
-
-            if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.message || 'Error uploading');
-            }
-
-            showStatus(`"${file.name}" uploaded successfully.`, 'success');
-            fileInput.value = '';
-            loadFiles();
-        } catch (err) {
-            showStatus(`Fout: ${err.message}`, 'error');
-        } finally {
-            uploadBtn.disabled = false;
-        }
-        }
-
-        async function deleteFile(fileName, sha) {
-        if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
-
-        const user = netlifyIdentity.currentUser();
-        const folder = document.getElementById('folder').value;
-        const filePath = `${folder}/${fileName}`;
-
-        showStatus(`"${fileName}" deleting...`, '');
-
-        try {
-            const token = await user.jwt();
-            const res = await fetch(`/.netlify/git/github/contents/${filePath}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: `CONTENT: deleted ${fileName} from ${folder}`,
-                sha: sha,
-                branch: branch
-            })
-            });
-
-            if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.message || 'Error deleting');
-            }
-
-            showStatus(`"${fileName}" deleted successfully`, 'success');
-            loadFiles();
-        } catch (err) {
-            showStatus(`Error deleting ${err.message}`, 'error');
-        }
-        }
-
-        function toBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-        }
-
-        function showStatus(msg, type) {
-        statusBox.innerText = msg;
-        statusBox.className = type;
-        statusBox.style.display = msg ? 'block' : 'none';
-        }
-    </script>
+    <script src="../assets/script/admin.js"></script>
 </body>
 </html>
