@@ -15,22 +15,21 @@
 
     <link rel="stylesheet" href="../assets/style/base.css">
     <style>
-        .card { border: 0.1em solid var(--color-secondary); border-radius: 1em; padding: 1em; }
-        label { display: block; font-weight: 600; margin-top: 16px; margin-bottom: 6px; }
-        select, input[type="file"], button { width: 100%; padding: 10px; border-radius: 6px; border: 0.1em solid var(--color-secondary); }
-        button { background: #0066cc; color: white; border: none; font-weight: 600; margin-top: 16px; }
+        body{ max-width: 40em; margin: auto; margin-top: 2em; }
+        label, .file-section span { display: block; padding-top: 1em; padding-bottom: 1em; font-weight: 800; text-align: center;}
+        select, input[type="file"], button { width: 100%; padding: 0.5em; border-radius: 0.5em; border: 0.1em solid var(--color-secondary); }
+        button { background: #0066cc; color: white; border: none; margin-top: 16px; padding: 0.5em 1em; font-weight: 600; width: fit-content;}
         button:disabled { background: #999; cursor: not-allowed; }
-        #status { margin-top: 16px; padding: 10px; border-radius: 6px; display: none; }
+        #status { margin-top: 16px; padding: 10px; border-radius: 1em; display: none; }
         .success { background: #e6f4ea; color: #137333; }
         .error { background: #fce8e6; color: #c5221f; }
         
-        .file-section { margin-top: 32px; border-top: 1px solid #eee; padding-top: 20px; }
+        .file-section, .adding-file { margin-top: 3em; border-top: 0.1em solid var(--color-secondary); }
         .file-list { list-style: none; padding: 0; margin: 12px 0 0 0; }
-        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 0.1em solid var(--color-secondary); }
         .file-item:last-child { border-bottom: none; }
         .file-name { font-family: monospace; font-size: 0.9em; word-break: break-all; margin-right: 12px; }
-        .btn-delete { width: auto; padding: 6px 12px; margin-top: 0; background: #d93025; font-size: 0.85em; }
-        .empty-msg { color: #666; font-style: italic; margin-top: 8px; }
+        .btn-delete { margin-top: 0; background: none; border: 0.1em solid var(--color-secondary); }
     </style>
 
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -39,15 +38,14 @@
     <meta name="theme-color" content="#ff0000">
 </head>
 <body>
-    <div class="card">
-        <h2>Media manager</h2>
+    <h1>Media manager</h1>
 
-        <div id="auth-state">
-        <button onclick="netlifyIdentity.open()" type="button">Login</button>
-        </div>
+    <div id="auth-state">
+    <button onclick="netlifyIdentity.open()" type="button">Login</button>
+    </div>
 
-        <div id="dashboard" style="display: none;">
-        <p>Logged in as <strong id="user-email"></strong> (<a href="#" onclick="netlifyIdentity.logout()">Log out</a>)</p>
+    <div id="dashboard" style="display: none;">
+        <p>Logged in as <strong id="user-email"></strong> (<a href="#" onclick="netlifyIdentity.logout()">log out</a>)</p>
 
         <label for="folder">Select folder</label>
         <select id="folder" onchange="loadFiles()">
@@ -57,16 +55,17 @@
             <option value="assets/media/audio/instrumentals">Audio / instrumentals</option>
         </select>
 
-        <label for="file">Add file</label>
-        <input type="file" id="file">
+        <div class="adding-file">
+            <label for="file">Add file to folder</label>
+            <input type="file" id="file">
 
-        <button id="upload-btn" onclick="uploadFile()" type="button">Upload file</button>
-        <div id="status"></div>
+            <button id="upload-btn" onclick="uploadFile()" type="button">Upload file</button>
+            <div id="status"></div>
+        </div>
 
         <div class="file-section">
-            <h3>Files in this folder</h3>
+            <span>Remove files from folder</span>
             <ul id="file-list" class="file-list"></ul>
-        </div>
         </div>
     </div>
 
@@ -98,7 +97,7 @@
         if (!user) return;
 
         const folder = document.getElementById('folder').value;
-        fileListElement.innerHTML = '<li>Laden...</li>';
+        fileListElement.innerHTML = '<li>Loading...</li>';
 
         try {
             const token = await user.jwt();
@@ -107,7 +106,7 @@
             });
 
             if (res.status === 404) {
-            fileListElement.innerHTML = '<li class="empty-msg">Folder is empty or non-existent</li>';
+            fileListElement.innerHTML = '<li class="empty-msg">Folder is empty or non-existent.</li>';
             return;
             }
 
