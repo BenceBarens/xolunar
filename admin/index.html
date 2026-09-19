@@ -43,9 +43,12 @@
 
         <div class="adding-file">
             <label for="file">Add file to folder</label>
-            <input type="file" id="file">
+            <div class="upload-field">
+                <input type="file" id="file" accept="image/webp, audio/mp4">
+                <button id="upload-btn" onclick="uploadFile()" type="submit">Upload file</button>
+            </div>
             <p>Note: make sure to only upload .webp in photo folders and .mp4 in audio folders. When uploading images, try to make them 1950px or smaller.</p>
-            <button id="upload-btn" onclick="uploadFile()" type="button">Upload file</button>
+            <p>The file names shown on the website aren't the actual file names; they have been slightly modified (file extentions and underscores) for aesthetics. Any duplicate file names will be overwritten.</p>
             <div id="status"></div>
         </div>
 
