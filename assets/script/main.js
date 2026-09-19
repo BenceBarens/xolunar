@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 splash.hidden = true;
                 sessionStorage.setItem('splashShown', 'true');
             }, 500);
-        }, 2500);
+        }, 1500);
     }, 500);
 });
 

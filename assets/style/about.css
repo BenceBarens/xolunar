@@ -16,6 +16,11 @@
     z-index: 1;
 }
 
+#about main small{
+    display: block;
+    margin-bottom: 0.5em;
+}
+
 /* Portfolio viewport */
 #about main #portfolio {
     position: fixed;
