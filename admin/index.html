@@ -32,6 +32,8 @@
     <div id="dashboard" style="display: none;">
         <p><a href="#" onclick="logout()">Log out</a></p>
 
+        <div id="status"></div>
+
         <fieldset>
             <legend>Selected folder</legend>
             <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/Photo/cover art" checked onchange="loadFiles()">Photo / cover art</label>
@@ -44,12 +46,11 @@
         <div class="adding-file">
             <label for="file">Add file to folder</label>
             <div class="upload-field">
-                <input type="file" id="file" accept="image/webp, audio/mp4">
+                <input type="file" id="file" accept="image/webp, audio/mp3">
                 <button id="upload-btn" onclick="uploadFile()" type="submit">Upload file</button>
             </div>
             <p>Note: make sure to only upload .webp in photo folders and .mp4 in audio folders. When uploading images, try to make them 1950px or smaller.</p>
             <p>The file names shown on the website aren't the actual file names; they have been slightly modified (file extentions and underscores) for aesthetics. Any duplicate file names will be overwritten.</p>
-            <div id="status"></div>
         </div>
 
         <div class="file-section">

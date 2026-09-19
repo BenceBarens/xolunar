@@ -45,7 +45,7 @@ async function loginWithToken() {
                 'Accept': 'application/vnd.github+json'
             }
         });
-        if (!res.ok) throw new Error('Token is ongeldig of heeft geen toegang.');
+        if (!res.ok) throw new Error('Token is invalid, expired or has no access.');
         
         const user = await res.json();
         sessionStorage.setItem('gh_admin_token', token);
@@ -156,7 +156,7 @@ async function uploadFile() {
             throw new Error(errData.message || 'Error uploading');
         }
 
-        showStatus(`"${file.name}" uploaded successfully.`, 'success');
+        showStatus(`"${file.name}" uploaded successfully (may take few minutes to appear on website and admin panel, cookies may play a role).`, 'success');
         fileInput.value = '';
         loadFiles();
     } catch (err) {
@@ -195,7 +195,7 @@ async function deleteFile(fileName, sha) {
             throw new Error(errData.message || 'Error deleting');
         }
 
-        showStatus(`"${fileName}" deleted successfully`, 'success');
+        showStatus(`"${fileName}" deleted successfully (may take a few minutes to dissappear from website and admin panel, cookies may play a role).`, 'success');
         loadFiles();
     } catch (err) {
         showStatus(`Error deleting ${err.message}`, 'error');
