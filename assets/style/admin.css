@@ -53,20 +53,26 @@ fieldset label:has(input:checked){
     color: white;
 }
 
-#status {
-    margin-top: 2em;
+#token-input, #auth-state{
+    margin: 1em 0;
+}
+
+#status, #login-status{
+    margin: 1em 0;
     padding: 1em;
     display: none;
+    background: #fdedd9;
+    color: #5c3d0f;
 }
 
 .success {
-    background: #e6f4ea;
-    color: #137333;
+    background: #e6f4ea !important;
+    color: #137333 !important;
 }
 
 .error {
-    background: #fce8e6;
-    color: #c5221f;
+    background: #fce8e6 !important;
+    color: #c5221f !important;
 }
 
 .upload-field {
