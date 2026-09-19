@@ -1,0 +1,107 @@
+body{
+    width: 100%;
+    max-width: 40em;
+    margin: auto;
+    padding: 2em 1em;
+}
+
+.adding-file > label, .file-section > span {
+    display: block;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    font-weight: 800;
+    text-align: center;
+}
+
+select, input[type="file"], input[type="password"]{
+    color: var(--color-secondary);
+    font-size: 1em;
+    width: 100%;
+    padding: 0.5em;
+    border: 0.1em solid var(--color-secondary);
+}
+
+button {
+    background-color: var(--color-primary);
+    color: var(--color-secondary);
+    width: fit-content;
+    padding: 0.5em 1em;
+    border: 0.1em solid var(--color-secondary);
+    font-size: 1em;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+fieldset{
+    border: none;
+    padding: 0;
+}
+
+fieldset label{
+    border: 0.1em solid var(--color-secondary);
+    border-radius: 50em;
+    padding: 0.2em 0.5em;
+    margin: 0.2em;
+    display: inline-block;
+}
+
+fieldset label:has(input:checked){
+    background-color: var(--color-accent);
+    color: white;
+}
+
+#status {
+    margin-top: 2em;
+    padding: 1em;
+    display: none;
+}
+
+.success {
+    background: #e6f4ea;
+    color: #137333;
+}
+
+.error {
+    background: #fce8e6;
+    color: #c5221f;
+}
+
+.upload-field {
+    display: flex;
+    gap: 0.5em;
+}
+
+.upload-field button{
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+}
+
+.file-section, .adding-file {
+    margin-top: 3em;
+    border-top: 0.1em solid var(--color-secondary);
+}
+
+.file-list {
+    padding: 0;
+    list-style-type: none;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 0;
+    border-bottom: 0.1em solid var(--color-secondary);
+}
+
+.file-item:last-child {
+    border-bottom: none; 
+}
+
+.file-name {
+    word-break: break-all;
+    margin-right: 2em;
+}
