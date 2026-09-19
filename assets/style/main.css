@@ -75,8 +75,7 @@ footer p{
         background-color: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
-        border: solid var(--color-primary);
-        animation: showBoxShadow linear both;
+        animation: showBoxShadowLight linear both;
         animation-timeline: scroll(root block);
         animation-range: 0vh 15vh;
     }
@@ -84,13 +83,20 @@ footer p{
     @media (prefers-color-scheme: dark) {
         header p{
             background-color: rgba(17, 17, 17, 0.6);
-            border: solid #333333;
+            animation: showBoxShadowDark linear both;
+            animation-timeline: scroll(root block);
+            animation-range: 0vh 15vh;
         }
     }
 
-    @keyframes showBoxShadow{
-        from{box-shadow: 0 0 0em -0.5em #000000; border-width: 0em;}
-        to{box-shadow: 0 0 0.7em -0.5em #000000; border-width: 0.1em;}
+    @keyframes showBoxShadowLight{
+        from{ box-shadow: 0 0 0em -0.5em #000000; border: solid rgba(0, 0, 0, 0) 0.1em; }
+        to{ box-shadow: 0 0 0.7em -0.5em #000000; border: solid rgba(0, 0, 0, 0.2) 0.1em; }
+    }
+
+    @keyframes showBoxShadowDark{
+        from{ box-shadow: 0 0 0em -0.3em #000000; border: solid rgba(255, 255, 255, 0) 0.1em; }
+        to{ box-shadow: 0 0 0.7em -0.3em #000000; border: solid rgba(255, 255, 255, 0.2) 0.1em; }
     }
 
     footer{
