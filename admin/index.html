@@ -32,13 +32,14 @@
     <div id="dashboard" style="display: none;">
         <p><a href="#" onclick="logout()">Log out</a></p>
 
-        <label for="folder">Select folder</label>
-        <select id="folder" onchange="loadFiles()">
-            <option value="assets/media/Photo/cover art">Photo / cover art</option>
-            <option value="assets/media/Photo/photo">Photo / photo</option>
-            <option value="assets/media/audio/beats">Audio / beats</option>
-            <option value="assets/media/audio/instrumentals">Audio / instrumentals</option>
-        </select>
+        <fieldset>
+            <legend>Selected folder</legend>
+            <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/Photo/cover art" checked onchange="loadFiles()">Photo / cover art</label>
+            <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/Photo/photo" onchange="loadFiles()">Photo / photo</label>
+            <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/Photo" onchange="loadFiles()">Photo / other</label>
+            <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/audio/beats" onchange="loadFiles()">Audio / beats</label>
+            <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/audio/instrumentals" onchange="loadFiles()">Audio / instrumentals</label>
+        </fieldset>
 
         <div class="adding-file">
             <label for="file">Add file to folder</label>

@@ -77,7 +77,7 @@ async function loadFiles() {
     const token = getAuthToken();
     if (!token) return;
 
-    const folder = document.getElementById('folder').value;
+    const folder = document.querySelector('input[name="folder"]:checked').value;
     fileListElement.innerHTML = '<li>Loading...</li>';
 
     try {
@@ -121,7 +121,7 @@ async function loadFiles() {
 async function uploadFile() {
     const token = getAuthToken();
     const fileInput = document.getElementById('file');
-    const folder = document.getElementById('folder').value;
+    const folder = document.querySelector('input[name="folder"]:checked').value;
 
     if (!fileInput.files.length) {
         showStatus('Choose a file', 'error');
@@ -170,7 +170,7 @@ async function deleteFile(fileName, sha) {
     if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
 
     const token = getAuthToken();
-    const folder = document.getElementById('folder').value;
+    const folder = document.querySelector('input[name="folder"]:checked').value;
     const filePath = `${folder}/${fileName}`;
 
     showStatus(`"${fileName}" deleting...`, '');
