@@ -70,6 +70,7 @@
     padding: 0;
     list-style: none;
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
     pointer-events: none;
 }
 
@@ -82,14 +83,17 @@
     flex-direction: column;
     align-items: center;
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
     transform: 
         translateX(-50%) 
         translateY(var(--row-offset)) 
         rotateY(calc(var(--slot) * var(--angle))) 
         translateZ(calc(-1 * var(--radius)));
     backface-visibility: hidden;
-    contain: layout paint;
+    -webkit-backface-visibility: hidden;
+    contain: layout;
     transition: all 100ms ease;
+    pointer-events: none;
 }
 
 .ring li:hover{
@@ -101,9 +105,12 @@
         scale(1.1);
 }
 
-.ring li,
 .ring li * {
     pointer-events: auto;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 #portfolio.no-clicks,
@@ -116,6 +123,8 @@
     aspect-ratio: 1 / 1;
     object-fit: cover;
     display: block;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }
 
 .ring li:hover img, .ring li:hover video{
@@ -131,6 +140,11 @@
 #about main section:nth-of-type(2){
     text-align: center;
     margin-top: 40vh;
+    pointer-events: none;
+}
+
+#about main section:nth-of-type(2) > * {
+    pointer-events: auto;
 }
 
 #about main section:nth-of-type(2) p{
