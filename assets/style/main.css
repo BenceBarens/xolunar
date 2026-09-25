@@ -61,8 +61,11 @@ footer p{
     }
 
     header nav a[aria-current="page"]:after{
-        content: "●";
-        color: var(--color-accent);
+        content: "";
+        height: 0.5em;
+        width: 0.5em;
+        display: inline-block;
+        background-color: var(--color-accent);
         margin-left: 0.4em;
     }
 
@@ -134,7 +137,21 @@ footer p{
     }
 
     header nav li:has(a[aria-current="page"]){
-        border-bottom: 0.2em solid var(--color-accent);
+        font-weight: 700;
+        font-stretch: 95%;
+    }
+
+    header nav li a[aria-current="page"]:before{
+        content: "";
+        background-color: var(--color-accent);
+        width: 1em;
+        height: 0.25em;
+        margin-right: 0.4em;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        position: absolute;
+        z-index: 99999999999;
     }
 
     header p{
