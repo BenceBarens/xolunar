@@ -51,14 +51,27 @@ function createMediaElement(file, layout, prefersReducedMotion) {
             ? file.replace('/upload/', `/upload/w_${layout.itemSize},h_${layout.itemSize},c_fill,g_auto/`)
             : file;
 
+        mediaElement.muted = true;
+        mediaElement.defaultMuted = true;
+        mediaElement.playsInline = true;
+        mediaElement.setAttribute('muted', '');
+        mediaElement.setAttribute('playsinline', '');
+        mediaElement.setAttribute('webkit-playsinline', '');
+        mediaElement.loop = true;
+        mediaElement.controls = false;
+
         mediaElement.src = squareVideoUrl;
         mediaElement.poster = file.replace('/upload/', '/upload/so_2/').replace(/\.(mp4|webm|mov)$/i, '.jpg');
-        mediaElement.loop = true;
-        mediaElement.muted = true;
-        mediaElement.controls = false;
-        mediaElement.setAttribute('muted', ''); 
-        mediaElement.setAttribute('playsinline', ''); 
-        mediaElement.autoplay = !prefersReducedMotion;
+
+        if (!prefersReducedMotion) {
+            mediaElement.autoplay = true;
+            const playPromise = mediaElement.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    console.log("Playback blocked")
+                });
+            }
+        }
     } else {
         mediaElement = document.createElement('img');
         const rawUrl = `${window.GLOBAL_SETTINGS.githubBaseUrl}${file}`;
