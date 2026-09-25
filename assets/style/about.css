@@ -131,6 +131,14 @@
     border: 0.1em solid var(--color-accent);
 }
 
+.ring video::-webkit-media-controls,
+.ring video::-webkit-media-controls-start-playback-button,
+.ring video::-webkit-media-controls-play-button {
+    display: none !important;
+    -webkit-appearance: none;
+    opacity: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
     #carousel-stage {
         animation-duration: 500s;
