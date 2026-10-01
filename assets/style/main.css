@@ -26,6 +26,7 @@ header p{
     width: max-content;
     max-width: 100%;
     background-color: var(--color-primary);
+    text-wrap: pretty;
 }
 
 header p span{
