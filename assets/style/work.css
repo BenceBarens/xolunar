@@ -103,7 +103,7 @@ h1{
     height: fit-content;
 }
 
-main section:last-of-type{
+main > section:last-of-type{
     margin: 6em auto 0 auto;
     text-align: center;
     display: flex;
@@ -111,7 +111,7 @@ main section:last-of-type{
     align-items: center;
 }
 
-main section:last-of-type *{
+main > section:last-of-type *{
     width: fit-content;
 }
 
@@ -265,10 +265,4 @@ main section:last-of-type *{
     border: 0.15em solid var(--color-accent);
     border-radius: 50%;
     cursor: grab;
-}
-
-aside p{
-    text-align: center;
-    margin: 2em auto;
-    font-size: 1.5em;
 }
