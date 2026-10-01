@@ -185,7 +185,7 @@ button{
 .button:hover {
     background-color: var(--color-accent);
     border-color: var(--color-accent);
-    color: var(--color-primary);
+    color: white;
     font-weight: 600;
     font-stretch: 100%;
 }
