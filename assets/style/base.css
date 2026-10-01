@@ -171,6 +171,25 @@ button{
     display: none !important;
 }
 
+.button{
+    display: inline-block;
+    text-decoration: none;
+    padding: 0.5em 1em;
+    font-weight: 600;
+    color: var(--color-primary);
+    background-color: var(--color-secondary);
+    border: 0.1em solid var(--color-secondary);
+    transition: all 200ms ease;
+}
+
+.button:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-primary);
+    font-weight: 600;
+    font-stretch: 100%;
+}
+
 /* Skip to main */
 
 body > a:first-child{

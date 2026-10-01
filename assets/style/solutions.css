@@ -1,8 +1,77 @@
 section{
     width: fit-content;
     margin: 0 auto;
+    max-width: min(40em, 100%);
 }
 
 h1{
     width: fit-content;
+}
+
+main ul, main ol{
+    display: grid;
+    padding: 0;
+    margin: 2em auto;
+    gap: 1em;
+    list-style-type: none;
+}
+
+main ol{
+    counter-reset: mijn-teller;
+}
+
+main ol li{
+    counter-increment: mijn-teller;
+    position: relative;
+    overflow: hidden;
+}
+
+main ol li:before {
+    content: counter(mijn-teller);
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(20%, -25%);
+    font-size: 10em;
+    font-weight: 800;
+    font-stretch: 75%;
+    opacity: 10%;
+    transition: all 100ms ease;
+}
+
+main li{
+    padding: 1em;
+    background-color: var(--color-primary);
+    border: 0.1em solid var(--color-secondary);
+    box-shadow: 0.2em 0.2em 0 var(--color-secondary);
+    transition: all 100ms ease;
+}
+
+main li:hover{
+    transform: translate(-0.1em, -0.1em);
+    box-shadow: 0.3em 0.3em 0 var(--color-accent);
+}
+
+main ol li:hover:before{
+    color: var(--color-accent);
+}
+
+main li span{
+    font-size: 1.2em;
+    font-weight: 800;
+    font-stretch: 75%;
+    display: inline-block;
+    padding-bottom: 0.5em;
+}
+
+main section:last-of-type{
+    margin: 4em auto;
+    text-align: center;
+}
+
+@media (min-width: 550px) {
+    main ul, main ol{
+        grid-template-columns: 1fr 1fr 1fr;
+        text-align: center;
+    }
 }
