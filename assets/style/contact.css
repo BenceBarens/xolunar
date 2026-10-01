@@ -48,21 +48,6 @@ textarea[aria-invalid="true"] {
     border-color: var(--color-accent) !important;
 }
 
-form button{
-    padding: 0.5em 1em;
-    font-weight: 600;
-    color: var(--color-primary);
-    background-color: var(--color-secondary);
-    border: 0.1em solid var(--color-secondary);
-    transition: all 200ms ease;
-}
-
-form button:hover {
-    background-color: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-primary);
-}
-
 dialog{
     position: fixed;
     padding: 0;
