@@ -1,20 +1,27 @@
-body{
+body {
     width: 100%;
     max-width: 40em;
     margin: auto;
     padding: 2em 1em;
 }
 
-.adding-file > label, .file-section > span {
+section {
+    margin-top: 3em;
+    border-top: 0.1em solid var(--color-secondary);
+}
+
+section > span,
+section > label {
     display: block;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding: 1em 0;
     font-weight: 800;
     text-align: center;
 }
 
-select, input[type="file"], input[type="password"]{
-    color: var(--color-secondary);
+select,
+input {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
     font-size: 1em;
     width: 100%;
     padding: 0.5em;
@@ -28,6 +35,7 @@ button {
     padding: 0.5em 1em;
     border: 0.1em solid var(--color-secondary);
     font-size: 1em;
+    cursor: pointer;
 }
 
 button:disabled {
@@ -35,29 +43,32 @@ button:disabled {
     cursor: not-allowed;
 }
 
-fieldset{
+fieldset {
     border: none;
     padding: 0;
 }
 
-fieldset label{
+fieldset label {
     border: 0.1em solid var(--color-secondary);
     border-radius: 50em;
     padding: 0.2em 0.5em;
     margin: 0.2em;
     display: inline-block;
+    cursor: pointer;
 }
 
-fieldset label:has(input:checked){
+fieldset label:has(input:checked) {
     background-color: var(--color-accent);
     color: white;
 }
 
-#token-input, #auth-state{
+#token-input,
+#auth-state {
     margin: 1em 0;
 }
 
-#status, #login-status{
+#status,
+#login-status {
     margin: 1em 0;
     padding: 1em;
     display: none;
@@ -80,14 +91,9 @@ fieldset label:has(input:checked){
     gap: 0.5em;
 }
 
-.upload-field button{
+.upload-field button {
     background-color: var(--color-secondary);
     color: var(--color-primary);
-}
-
-.file-section, .adding-file {
-    margin-top: 3em;
-    border-top: 0.1em solid var(--color-secondary);
 }
 
 .file-list {
@@ -110,4 +116,37 @@ fieldset label:has(input:checked){
 .file-name {
     word-break: break-all;
     margin-right: 2em;
+}
+
+/* Video Manager Styles */
+#video-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.video-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.video-folder-input {
+    width: 9em;
+}
+
+.video-url-input {
+    flex: 1;
+}
+
+.video-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Helper Class */
+.is-hidden {
+    display: none !important;
 }
