@@ -2,6 +2,8 @@ name: Generate Media List
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'assets/media/Photo/**'
       - '.github/workflows/generate-media-list.yml'
