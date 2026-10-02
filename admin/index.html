@@ -29,7 +29,7 @@
         <div id="login-status"></div>
     </div>
 
-    <div id="dashboard" style="display: none;">
+    <div id="dashboard" class="is-hidden">
         <p><a href="#" onclick="logout()">Log out</a></p>
 
         <div id="status"></div>
@@ -41,22 +41,35 @@
             <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/Photo" onchange="loadFiles()">Photo / other</label>
             <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/audio/beats" onchange="loadFiles()">Audio / beats</label>
             <label><input type="radio" name="folder" class="visually-hidden" value="assets/media/audio/instrumentals" onchange="loadFiles()">Audio / instrumentals</label>
+            <label><input type="radio" name="folder" class="visually-hidden" value="videos_json" onchange="loadFiles()">Video</label>
         </fieldset>
 
-        <div class="adding-file">
+        <section class="adding-file">
             <label for="file">Add file to folder</label>
             <div class="upload-field">
                 <input type="file" id="file" accept="image/webp, audio/mp3">
                 <button id="upload-btn" onclick="uploadFile()" type="submit">Upload file</button>
             </div>
-            <p>Note: make sure to only upload .webp in photo folders and .mp4 in audio folders. When uploading images, try to make them 1950px or smaller.</p>
+            <p>Note: make sure to only upload .webp in photo folders and .mp3 in audio folders. When uploading images, try to make them 1950px or smaller.</p>
             <p>The file names shown on the website aren't the actual file names; they have been slightly modified (file extentions and underscores) for aesthetics. Any duplicate file names will be overwritten.</p>
-        </div>
+        </section>
 
-        <div class="file-section">
+        <section class="file-section">
             <span>Remove files from folder</span>
             <ul id="file-list" class="file-list"></ul>
-        </div>
+        </section>
+
+        <section id="video-editor-section" class="is-hidden">
+            <span>Manage videos</span>
+            <p>When removing videos, make sure to also delete them from Cloudinary to save space.</p>
+
+            <div id="video-rows"></div>
+            
+            <div class="video-actions">
+                <button type="button" onclick="addVideoRow()">+ Add video</button>
+                <button type="button" id="save-videos-btn" onclick="saveVideosJson()">Save changes to GitHub</button>
+            </div>
+        </section>
     </div>
 
     <script src="../assets/script/admin.js"></script>

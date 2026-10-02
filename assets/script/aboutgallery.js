@@ -32,8 +32,9 @@ async function loadMedia() {
         const videos = await videoResponse.json();
 
         const canvasVideos = videos
-            .filter(item => item.folder === 'canvas')
-            .map(item => item.url);
+            .filter(item => (item.folder || '').trim().toLowerCase().includes('canvas'))
+            .map(item => item.url || item.file)
+            .filter(Boolean);
 
         mediaItems = [...photos, ...canvasVideos].sort(() => Math.random() - 0.5);
         setupCarousel();

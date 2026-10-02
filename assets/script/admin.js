@@ -1,11 +1,22 @@
 const repoOwner = 'BenceBarens'; 
 const repoName = 'xolunar'; 
 const branch = 'main';
+const videosFilePath = 'videos.json';
 
 const statusBox = document.getElementById('status');
 const uploadBtn = document.getElementById('upload-btn');
 const fileListElement = document.getElementById('file-list');
 const loginStatusBox = document.getElementById('login-status');
+
+const authStateSection = document.getElementById('auth-state');
+const dashboardSection = document.getElementById('dashboard');
+const videoEditorSection = document.getElementById('video-editor-section');
+const videoRowsContainer = document.getElementById('video-rows');
+const saveVideosBtn = document.getElementById('save-videos-btn');
+const addingFileSection = document.querySelector('.adding-file');
+const fileSection = document.querySelector('.file-section');
+
+let currentVideosSha = null;
 
 function getAuthToken() {
     return sessionStorage.getItem('gh_admin_token');
@@ -20,10 +31,9 @@ async function verifyAndInit(token) {
             }
         });
         if (!res.ok) throw new Error('Ongeldig token');
-        const user = await res.json();
         
-        document.getElementById('auth-state').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
+        authStateSection.classList.add('is-hidden');
+        dashboardSection.classList.remove('is-hidden');
         loadFiles();
     } catch (err) {
         logout();
@@ -47,11 +57,10 @@ async function loginWithToken() {
         });
         if (!res.ok) throw new Error('Token is invalid, expired or has no access.');
         
-        const user = await res.json();
         sessionStorage.setItem('gh_admin_token', token);
         
-        document.getElementById('auth-state').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
+        authStateSection.classList.add('is-hidden');
+        dashboardSection.classList.remove('is-hidden');
         loginStatusBox.style.display = 'none';
         loadFiles();
     } catch (err) {
@@ -63,8 +72,8 @@ async function loginWithToken() {
 
 function logout() {
     sessionStorage.removeItem('gh_admin_token');
-    document.getElementById('auth-state').style.display = 'block';
-    document.getElementById('dashboard').style.display = 'none';
+    authStateSection.classList.remove('is-hidden');
+    dashboardSection.classList.add('is-hidden');
     document.getElementById('token-input').value = '';
 }
 
@@ -73,15 +82,32 @@ if (savedToken) {
     verifyAndInit(savedToken);
 }
 
+// ==========================================
+// BESTANDEN & VIDEOS.JSON LADEN
+// ==========================================
+
 async function loadFiles() {
     const token = getAuthToken();
     if (!token) return;
 
-    const folder = document.querySelector('input[name="folder"]:checked').value;
+    const selectedFolder = document.querySelector('input[name="folder"]:checked').value;
+
+    if (selectedFolder === 'videos_json') {
+        addingFileSection.classList.add('is-hidden');
+        fileSection.classList.add('is-hidden');
+        videoEditorSection.classList.remove('is-hidden');
+        loadVideosJson();
+        return;
+    } else {
+        addingFileSection.classList.remove('is-hidden');
+        fileSection.classList.remove('is-hidden');
+        videoEditorSection.classList.add('is-hidden');
+    }
+
     fileListElement.innerHTML = '<li>Loading...</li>';
 
     try {
-        const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${encodeURIComponent(folder)}?ref=${branch}`, {
+        const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${encodeURIComponent(selectedFolder)}?ref=${branch}`, {
             headers: { 
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/vnd.github+json'
@@ -117,6 +143,156 @@ async function loadFiles() {
         fileListElement.innerHTML = `<li class="empty-msg">Error loading: ${err.message}</li>`;
     }
 }
+
+// ==========================================
+// VIDEOS.JSON BEHEREN
+// ==========================================
+
+async function loadVideosJson() {
+    const token = getAuthToken();
+    videoRowsContainer.innerHTML = '<p>Loading videos.json from GitHub...</p>';
+    showStatus('', '');
+
+    try {
+        const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}?ref=${branch}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github+json'
+            }
+        });
+
+        if (!res.ok) throw new Error('Could not load videos.json');
+
+        const fileData = await res.json();
+        currentVideosSha = fileData.sha;
+
+        const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
+        const videoList = JSON.parse(jsonString || '[]');
+
+        renderVideoRows(videoList);
+    } catch (err) {
+        videoRowsContainer.innerHTML = `<p class="error">Error loading videos.json: ${err.message}</p>`;
+    }
+}
+
+function renderVideoRows(videos) {
+    videoRowsContainer.innerHTML = '';
+
+    if (!videos || videos.length === 0) {
+        addVideoRow();
+        return;
+    }
+
+    videos.forEach(video => {
+        addVideoRow(video.folder || 'canvas', video.url || '');
+    });
+}
+
+function addVideoRow(folder = 'canvas', url = '') {
+    const row = document.createElement('div');
+    row.className = 'video-row';
+
+    const formattedUrl = formatCloudinaryUrl(url);
+
+    row.innerHTML = `
+        <input type="text" class="video-folder-input" placeholder="Folder (e.g. canvas)" value="${folder}">
+        <input type="text" class="video-url-input" placeholder="Cloudinary URL" value="${formattedUrl}">
+        <button type="button" class="btn-delete" onclick="this.parentElement.remove()">Remove</button>
+    `;
+
+    const urlInput = row.querySelector('.video-url-input');
+    urlInput.addEventListener('change', () => {
+        urlInput.value = formatCloudinaryUrl(urlInput.value);
+    });
+
+    videoRowsContainer.appendChild(row);
+}
+
+async function saveVideosJson() {
+    const token = getAuthToken();
+    if (!token) return;
+
+    const rows = videoRowsContainer.querySelectorAll('.video-row');
+    const updatedVideos = [];
+
+    rows.forEach(row => {
+        const folder = row.querySelector('.video-folder-input').value.trim();
+        const rawUrl = row.querySelector('.video-url-input').value.trim();
+        if (rawUrl) {
+            updatedVideos.push({
+                folder: folder || 'overig',
+                url: formatCloudinaryUrl(rawUrl)
+            });
+        }
+    });
+
+    if (saveVideosBtn) saveVideosBtn.disabled = true;
+    showStatus('Saving videos.json to GitHub...', '');
+
+    try {
+        const jsonContent = JSON.stringify(updatedVideos, null, 2);
+        const base64Content = btoa(unescape(encodeURIComponent(jsonContent)));
+
+        const bodyData = {
+            message: `CONTENT: update videos.json (${updatedVideos.length} videos)`,
+            content: base64Content,
+            branch: branch
+        };
+
+        if (currentVideosSha) {
+            bodyData.sha = currentVideosSha;
+        }
+
+        const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bodyData)
+        });
+
+        if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.message || 'Error updating videos.json');
+        }
+
+        const resultData = await res.json();
+        currentVideosSha = resultData.content.sha;
+
+        showStatus('videos.json updated and committed successfully!', 'success');
+    } catch (err) {
+        showStatus(`Error saving: ${err.message}`, 'error');
+    } finally {
+        if (saveVideosBtn) saveVideosBtn.disabled = false;
+    }
+}
+
+function formatCloudinaryUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    let cleanUrl = url.trim();
+
+    const targetParams = 'w_300,h_300,c_fit,q_auto,f_auto';
+
+    if (cleanUrl.includes('/video/upload/')) {
+        cleanUrl = cleanUrl.replace(
+            /\/video\/upload\/(?:[^/]+\/)?(v\d+\/.*|[a-zA-Z0-9_-]+\.[a-z0-9]+.*)/,
+            `/video/upload/${targetParams}/$1`
+        );
+    } else if (cleanUrl.includes('/upload/')) {
+        cleanUrl = cleanUrl.replace(
+            /\/upload\/(?:[^/]+\/)?(v\d+\/.*|[a-zA-Z0-9_-]+\.[a-z0-9]+.*)/,
+            `/upload/${targetParams}/$1`
+        );
+    }
+
+    return cleanUrl;
+}
+
+// ==========================================
+// REGULIERE UPLOAD & DELETE
+// ==========================================
 
 async function uploadFile() {
     const token = getAuthToken();

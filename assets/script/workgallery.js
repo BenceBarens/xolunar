@@ -61,13 +61,31 @@ async function generateVideoLists() {
         const response = await fetch(VIDEOS_URL);
         const items = await response.json();
 
-        const ulCanvas = document.getElementById('list-video-map1'); 
-        const ulClip = document.getElementById('list-video-overig'); 
-        const ulVideoOverig = document.getElementById('list-video-map2');
+        const container = document.getElementById('video-container')
+        const folderMap = new Map();
 
         items.forEach(item => {
             const url = item.url;
             const folder = item.folder || 'overig';
+
+            if (!folderMap.has(folder)) {
+                const details = document.createElement('details');
+                details.open = true;
+
+                const summary = document.createElement('summary');
+                summary.textContent = folder;
+
+                const ul = document.createElement('ul');
+                ul.id = `list-video-${encodeURIComponent(folder.toLowerCase())}`;
+
+                details.appendChild(summary);
+                details.appendChild(ul);
+                container.appendChild(details);
+
+                folderMap.set(folder, ul);
+            }
+
+            const targetUl = folderMap.get(folder);
 
             const li = document.createElement('li');
 
@@ -89,13 +107,7 @@ async function generateVideoLists() {
             li.appendChild(mediaElement);
             li.appendChild(titleElement);
 
-            if (folder === 'canvas') {
-                ulCanvas.appendChild(li);
-            } else if (folder === 'clip') {
-                ulClip.appendChild(li);
-            } else {
-                ulVideoOverig.appendChild(li);
-            }
+            targetUl.appendChild(li);
         });
 
     } catch (error) {
