@@ -31,9 +31,21 @@ async function loadMedia() {
         const photos = await photoResponse.json();
         const videos = await videoResponse.json();
 
+        // Zet video's direct om naar objecten met zowel compressed als origineel pad
         const canvasVideos = videos
-            .filter(item => item.folder === 'canvas')
-            .map(item => item.url);
+            .filter(item => (item.folder || '').toLowerCase().includes('canvas'))
+            .map(item => {
+                let raw = item.file || item.filename || item.name || item.url || '';
+                if (raw.includes('/')) raw = raw.split('/').pop().split('?')[0];
+
+                const folder = encodeURIComponent((item.folder || 'canvas').trim());
+                const file = encodeURIComponent(raw.trim());
+
+                return {
+                    original: `${window.GLOBAL_SETTINGS.r2BaseUrl}/${folder}/${file}`,
+                    compressed: `${window.GLOBAL_SETTINGS.r2BaseUrl}/${folder}/compressed/${file}`
+                };
+            });
 
         mediaItems = [...photos, ...canvasVideos].sort(() => Math.random() - 0.5);
         setupCarousel();
@@ -45,12 +57,10 @@ async function loadMedia() {
 function createMediaElement(file, layout, prefersReducedMotion) {
     let mediaElement;
 
-    if (file.startsWith('http')) {
-        mediaElement = document.createElement('video');
-        const squareVideoUrl = file.includes('/upload/') 
-            ? file.replace('/upload/', `/upload/w_${layout.itemSize},h_${layout.itemSize},c_fill,g_auto/`)
-            : file;
+    const isVideo = typeof file === 'object' || (typeof file === 'string' && file.startsWith('http'));
 
+    if (isVideo) {
+        mediaElement = document.createElement('video');
         mediaElement.muted = true;
         mediaElement.defaultMuted = true;
         mediaElement.playsInline = true;
@@ -60,16 +70,28 @@ function createMediaElement(file, layout, prefersReducedMotion) {
         mediaElement.loop = true;
         mediaElement.controls = false;
 
-        mediaElement.src = squareVideoUrl;
-        mediaElement.poster = file.replace('/upload/', '/upload/so_2/').replace(/\.(mp4|webm|mov)$/i, '.jpg');
+        const compressedUrl = typeof file === 'object' ? file.compressed : file;
+        const originalUrl = typeof file === 'object' ? file.original : file;
+
+        // Probeer eerst compressed
+        mediaElement.src = compressedUrl;
+        mediaElement.poster = `${compressedUrl}#t=1`;
+
+        // Als compressed niet bestaat (404), springt hij geruisloos naar het origineel
+        mediaElement.onerror = () => {
+            if (mediaElement.src !== originalUrl) {
+                mediaElement.src = originalUrl;
+                mediaElement.poster = `${originalUrl}#t=1`;
+                mediaElement.load();
+                if (!prefersReducedMotion) mediaElement.play().catch(() => {});
+            }
+        };
 
         if (!prefersReducedMotion) {
             mediaElement.autoplay = true;
             const playPromise = mediaElement.play();
             if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    console.log("Playback blocked")
-                });
+                playPromise.catch(() => {});
             }
         }
     } else {
