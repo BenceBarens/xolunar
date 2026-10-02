@@ -27,9 +27,9 @@ async function generateMediaLists() {
             const li = document.createElement('li');
 
             const img = document.createElement('img');
-            const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
+            const rawUrl = `${window.GLOBAL_SETTINGS.githubBaseUrl}${file}`;
 
-            img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${workLayout.itemWidth}&output=${GLOBAL_SETTINGS.imageFormat}&q=${GLOBAL_SETTINGS.imageQuality}`;
+            img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=${workLayout.itemWidth}&output=${window.GLOBAL_SETTINGS.imageFormat}&q=${window.GLOBAL_SETTINGS.imageQuality}`;
             img.loading = "lazy";
             img.alt = formatAlt(file);
 
@@ -61,41 +61,108 @@ async function generateVideoLists() {
         const response = await fetch(VIDEOS_URL);
         const items = await response.json();
 
-        const ulCanvas = document.getElementById('list-video-map1'); 
-        const ulClip = document.getElementById('list-video-overig'); 
-        const ulVideoOverig = document.getElementById('list-video-map2');
+        // Zoek een container voor video-groepen, of val terug op het eerste bestaande element
+        const container = document.querySelector('#video-container') 
+            || document.querySelector('#videos') 
+            || document.querySelector('#video-section')
+            || document.querySelector('#list-video-map1')?.parentElement?.parentElement
+            || document.body;
+
+        const folderMap = new Map();
 
         items.forEach(item => {
-            const url = item.url;
-            const folder = item.folder || 'overig';
+            let raw = item.file || item.filename || item.name || item.url || '';
+            if (raw.includes('/')) raw = raw.split('/').pop().split('?')[0];
+            if (!raw) return;
+
+            const folderName = (item.folder || 'Overig').trim();
+            const folderKey = encodeURIComponent(folderName);
+            const fileName = encodeURIComponent(raw.trim());
+
+            const originalUrl = `${window.GLOBAL_SETTINGS.r2BaseUrl}/${folderKey}/${fileName}`;
+            const compressedUrl = `${window.GLOBAL_SETTINGS.r2BaseUrl}/${folderKey}/compressed/${fileName}`;
+
+            // Maak dynamisch een details/summary aan per gevonden folder
+            if (!folderMap.has(folderName)) {
+                let ul = document.getElementById(`list-video-${folderKey.toLowerCase()}`);
+                
+                if (!ul) {
+                    const details = document.createElement('details');
+                    details.className = 'work-group';
+                    details.open = true;
+
+                    const summary = document.createElement('summary');
+                    summary.textContent = folderName;
+
+                    ul = document.createElement('ul');
+                    ul.className = 'work-list video-list';
+                    ul.id = `list-video-${folderKey.toLowerCase()}`;
+
+                    details.appendChild(summary);
+                    details.appendChild(ul);
+                    container.appendChild(details);
+                }
+                folderMap.set(folderName, ul);
+            }
+
+            const targetUl = folderMap.get(folderName);
 
             const li = document.createElement('li');
-
             const mediaElement = document.createElement('video');
-            mediaElement.src = url;
-            mediaElement.poster = url.replace('/upload/', '/upload/so_2/').replace(/\.(mp4|webm|mov)$/i, '.jpg');
-            mediaElement.loop = true;
+            
+            // 1. Eerst álle playback-attributen instellen
             mediaElement.muted = true;
+            mediaElement.defaultMuted = true;
+            mediaElement.loop = true;
             mediaElement.controls = false;
+            mediaElement.playsInline = true;
             mediaElement.setAttribute('muted', ''); 
             mediaElement.setAttribute('playsinline', ''); 
-            mediaElement.autoplay = !prefersReducedMotion;
+            mediaElement.setAttribute('webkit-playsinline', '');
 
-            li.addEventListener('click', () => openLightbox(url, mediaElement));
+            if (!window.prefersReducedMotion) {
+                mediaElement.autoplay = true;
+                mediaElement.setAttribute('autoplay', '');
+            }
+
+            // 2. Fallback afhandeling: herstart play() zodra hij switcht naar origineel
+            mediaElement.onerror = () => {
+                if (mediaElement.src !== originalUrl) {
+                    mediaElement.src = originalUrl;
+                    mediaElement.poster = `${originalUrl}#t=0.001`;
+                    mediaElement.load();
+                    if (!window.prefersReducedMotion) {
+                        mediaElement.play().catch(() => {});
+                    }
+                }
+            };
+
+            // 3. Pas als laatste de bron en poster toekennen
+            mediaElement.src = compressedUrl;
+            mediaElement.poster = `${compressedUrl}#t=0.001`;
+
+            // 4. Expliciet play aanroepen via promise
+            if (!window.prefersReducedMotion) {
+                const playPromise = mediaElement.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        // Mocht de browser wachten tot de video in viewport is:
+                        mediaElement.addEventListener('canplay', () => {
+                            mediaElement.play().catch(() => {});
+                        }, { once: true });
+                    });
+                }
+            }
+
+            const videoPayload = { original: originalUrl, compressed: compressedUrl };
+            li.addEventListener('click', () => openLightbox(videoPayload, mediaElement));
 
             const titleElement = document.createElement('p');
-            titleElement.textContent = formatTitle(url);
+            titleElement.textContent = formatTitle(raw);
 
             li.appendChild(mediaElement);
             li.appendChild(titleElement);
-
-            if (folder === 'canvas') {
-                ulCanvas.appendChild(li);
-            } else if (folder === 'clip') {
-                ulClip.appendChild(li);
-            } else {
-                ulVideoOverig.appendChild(li);
-            }
+            targetUl.appendChild(li);
         });
 
     } catch (error) {
@@ -126,7 +193,7 @@ async function generateAudioLists() {
             
             const audioElement = document.createElement('audio');
             audioElement.preload = 'metadata';
-            audioElement.src = `${GLOBAL_SETTINGS.githubAudioBaseUrl}${file}`;
+            audioElement.src = `${window.GLOBAL_SETTINGS.githubAudioBaseUrl}${file}`;
 
             const playBtn = document.createElement('button');
             playBtn.className = 'play-btn';
