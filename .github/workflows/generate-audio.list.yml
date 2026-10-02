@@ -2,6 +2,8 @@ name: Generate Audio List
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'assets/media/audio/**'
       - '.github/workflows/generate-audio-list.yml' 
