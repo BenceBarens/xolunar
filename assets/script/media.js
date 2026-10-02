@@ -8,7 +8,8 @@ window.GLOBAL_SETTINGS = {
     imageQuality: 70,
     imageFormat: 'webp',
     githubBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/Photo/',
-    githubAudioBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/audio/'
+    githubAudioBaseUrl: 'https://raw.githubusercontent.com/BenceBarens/xolunar/main/assets/media/audio/',
+    r2BaseUrl: 'https://pub-471595993fd34e81935d15516e5468c5.r2.dev'
 };
 
 window.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -20,22 +21,22 @@ window.formatAudioTitle = formatAudioTitle;
 window.openLightbox = openLightbox;
 window.closeLightbox = closeLightbox;
 
-// Helpers
 function isVideoFile(fileName) {
     return /\.(mp4|webm|mov|avi|mkv)$/i.test(fileName);
 }
 
 function formatTitle(file) {
-    const rawFileName = file.split('/').pop().split('?')[0];
+    const rawFileName = (typeof file === 'string' ? file : (file.original || '')).split('/').pop().split('?')[0];
     const isVideo = isVideoFile(rawFileName);
-    return rawFileName
+    return decodeURIComponent(rawFileName)
         .replace(/\.[^/.]+$/, isVideo ? '.mp4' : '.jpg')
         .toLowerCase()
         .replace(/ /g, '_');
 }
 
 function formatAlt(file) {
-    return file
+    const raw = typeof file === 'string' ? file : (file.original || '');
+    return decodeURIComponent(raw)
         .replace(/\.[^/.]+$/, '')
         .replace(/\([^)]*\)|\[[^\]]*\]/g, '')
         .replace(/\d/g, '')
@@ -53,7 +54,6 @@ function formatAudioTitle(file) {
 }
 
 function openLightbox(file, sourceMediaElement) {
-
     const stage = document.querySelector('#carousel-stage');
     if (stage) stage.classList.add('paused');
 
@@ -64,7 +64,8 @@ function openLightbox(file, sourceMediaElement) {
     lightboxMedia.innerHTML = '';
     lightboxTitle.textContent = formatTitle(file);
 
-    const isVideo = file.startsWith('http');
+    const isVideo = typeof file === 'object' || (typeof file === 'string' && file.startsWith('http'));
+    const videoUrl = typeof file === 'object' ? file.original : file;
 
     if (sourceMediaElement) {
         const placeholder = sourceMediaElement.cloneNode(true);
@@ -73,6 +74,8 @@ function openLightbox(file, sourceMediaElement) {
 
         if (isVideo) {
             placeholder.muted = true;
+            placeholder.setAttribute('playsinline', '');
+            placeholder.setAttribute('webkit-playsinline', '');
             placeholder.removeAttribute('autoplay');
             placeholder.pause?.();
         }
@@ -90,7 +93,7 @@ function openLightbox(file, sourceMediaElement) {
         video.muted = false;
         video.defaultMuted = false;
         video.loop = true;
-        video.src = file.replace(/w_\d+,h_\d+,c_[a-z]+,/, 'w_800,q_auto,f_auto/');
+        video.src = videoUrl;
 
         video.addEventListener('canplay', () => {
             video.classList.add('is-loaded');
@@ -111,8 +114,8 @@ function openLightbox(file, sourceMediaElement) {
         const img = document.createElement('img');
         img.className = 'media-full';
         img.alt = formatAlt(file);
-        const rawUrl = `${GLOBAL_SETTINGS.githubBaseUrl}${file}`;
-        img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=800&output=${GLOBAL_SETTINGS.imageFormat}&q=80`;
+        const rawUrl = `${window.GLOBAL_SETTINGS.githubBaseUrl}${file}`;
+        img.src = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=800&output=${window.GLOBAL_SETTINGS.imageFormat}&q=80`;
 
         const onLoaded = () => {
             img.classList.add('is-loaded');
@@ -132,7 +135,8 @@ function openLightbox(file, sourceMediaElement) {
 }
 
 function closeLightbox() {
-    lightbox.close();
+    const lightbox = document.querySelector('#lightbox');
+    if (lightbox) lightbox.close();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
