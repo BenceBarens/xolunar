@@ -15,7 +15,7 @@ const portfolioSection = document.querySelector('#portfolio');
 
 function getLayoutSettings() {
     const width = window.innerWidth;
-    if (width < 600) return { id: 'mobile', rings: 3, slotsPerRing: 16, itemSize: 120 };
+    if (width < 600) return { id: 'mobile', rings: 4, slotsPerRing: 16, itemSize: 120 };
     if (width < 900) return { id: 'tablet', rings: 3, slotsPerRing: 16, itemSize: 140 };
     if (width < 1600) return { id: 'desktop', rings: 3, slotsPerRing: 20, itemSize: 180 };
     return { id: 'ultrawide', rings: 3, slotsPerRing: 32, itemSize: 240 };
