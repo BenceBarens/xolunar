@@ -298,6 +298,11 @@ main{
     pointer-events: none;
 }
 
+.scramble {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal; 
+}
 /* LIGHTBOX ////////////////////////////////////////////////////// */
 
 #lightbox {

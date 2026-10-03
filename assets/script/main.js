@@ -2,7 +2,7 @@
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const hasHoverSupport = window.matchMedia('(hover: hover)').matches;
-const characters = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!@#$%^&*";
+const characters = "AabcdEeFfgHhIiJjKklnopqrSstuVvxYyz!#$%^&*[]{}";
 
 // SCRAMBLE FUNCTIE (Globaal beschikbaar) ///////////////////////////////////////
 
