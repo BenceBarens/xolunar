@@ -51,18 +51,6 @@ footer p{
         padding: 0.5em;
         border-radius: 0.5em;
         transform: translateY(-50%);
-        background-color: rgba(255, 255, 255, 0.8);
-        border: solid rgba(0, 0, 0, 0.2) 0.1em;
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-        box-shadow: 0 0 0.7em -0.5em #000000;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        header nav{
-            background-color: rgba(17, 17, 17, 0.6);
-            border: solid rgba(255, 255, 255, 0.2) 0.1em;
-        }
     }
 
     header nav ul{
@@ -303,6 +291,7 @@ main{
     word-break: break-word;
     white-space: normal; 
 }
+
 /* LIGHTBOX ////////////////////////////////////////////////////// */
 
 #lightbox {
