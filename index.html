@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="assets/style/base.css">
     <link rel="stylesheet" href="assets/style/main.css">
     <link rel="stylesheet" href="assets/style/about.css">
+    <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
     <meta name="theme-color" content="#ff0000">
@@ -69,7 +70,7 @@
         <section>
             <h2 class="scramble">Let's build something exceptional.</h2>
             <p>Book a free 15-minute introductory call to discuss your vision and see exactly where and how we can help you.</p>
-            <a href="" class="button">Book a Free Intro Call</a>
+            <a href="" class="button" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/finance-xolunar/30min'});return false;">Book a Free Intro Call</a>
         </section>
     </main>
 
@@ -90,5 +91,6 @@
     <script src="./assets/script/media.js"></script>
     <script src="./assets/script/aboutgallery.js"></script>
     <script src="./assets/script/location.js"></script>
+    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 </body>
 </html>
