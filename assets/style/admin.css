@@ -1,6 +1,6 @@
 body {
     width: 100%;
-    max-width: 40em;
+    max-width: 55em;
     margin: auto;
     padding: 2em 1em;
 }
@@ -20,8 +20,8 @@ section > label {
 
 select,
 input {
-    background-color: var(--color-secondary);
-    color: var(--color-primary);
+    background-color: var(--color-primary);
+    color: var(--color-secondary);
     font-size: 1em;
     width: 100%;
     padding: 0.5em;
@@ -29,11 +29,10 @@ input {
 }
 
 button {
-    background-color: var(--color-primary);
-    color: var(--color-secondary);
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
     width: fit-content;
     padding: 0.5em 1em;
-    border: 0.1em solid var(--color-secondary);
     font-size: 1em;
     cursor: pointer;
 }
@@ -91,9 +90,8 @@ fieldset label:has(input:checked) {
     gap: 0.5em;
 }
 
-.upload-field button {
-    background-color: var(--color-secondary);
-    color: var(--color-primary);
+#upload-btn{
+    width: 8em;
 }
 
 .file-list {
@@ -106,6 +104,7 @@ fieldset label:has(input:checked) {
     justify-content: space-between;
     align-items: center;
     padding: 0.5em 0;
+    margin: auto;
     border-bottom: 0.1em solid var(--color-secondary);
 }
 
@@ -118,12 +117,11 @@ fieldset label:has(input:checked) {
     margin-right: 2em;
 }
 
-/* Video Manager Styles */
 #video-rows {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 .video-row {
@@ -136,17 +134,12 @@ fieldset label:has(input:checked) {
     width: 9em;
 }
 
-.video-url-input {
-    flex: 1;
-}
-
 .video-actions {
     display: flex;
     gap: 0.5rem;
-    margin-top: 1rem;
+    align-items: center;
 }
 
-/* Helper Class */
 .is-hidden {
     display: none !important;
 }

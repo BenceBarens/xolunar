@@ -188,14 +188,14 @@ function renderVideoRows(videos) {
     });
 }
 
-function addVideoRow(folder = 'canvas', url = '') {
+function addVideoRow(folder = '', url = '') {
     const row = document.createElement('div');
     row.className = 'video-row';
 
     const formattedUrl = formatCloudinaryUrl(url);
 
     row.innerHTML = `
-        <input type="text" class="video-folder-input" placeholder="Folder (e.g. canvas)" value="${folder}">
+        <input type="text" class="video-folder-input" placeholder="Folder" value="${folder}">
         <input type="text" class="video-url-input" placeholder="Cloudinary URL" value="${formattedUrl}">
         <button type="button" class="btn-delete" onclick="this.parentElement.remove()">Remove</button>
     `;
