@@ -176,6 +176,8 @@ button{
     text-decoration: none;
     padding: 0.5em 1em;
     font-weight: 600;
+    font-size: inherit;
+    font-family: inherit;
     color: var(--color-primary);
     background-color: var(--color-secondary);
     border: 0.1em solid var(--color-secondary);
