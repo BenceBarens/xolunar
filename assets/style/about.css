@@ -216,7 +216,7 @@ h1 {
     font-size: clamp(2em, 12vw, 3em);
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 999px) {
     h1{
         width: min-content;
         margin-top: 1em;
