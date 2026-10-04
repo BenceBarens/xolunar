@@ -440,13 +440,8 @@ main{
 /* Was 975px */
 @media (max-width: 649px) {
     .calendly-overlay .calendly-popup {
-        width: 100%;
-        height: 80vh;
-        top: 20vh;
-        left: 0;
-        transform: none;
-        border-top-left-radius: 1em;
-        border-top-right-radius: 1em;
+        margin-top: 2em;
+        border-radius: 1em;
         overflow: hidden;
     }
 }
@@ -507,12 +502,6 @@ main{
 @keyframes loading {
     to {
         transform: rotate(360deg);
-    }
-}
-
-@media (max-width: 649px) {
-    .calendly-spinner {
-        transform: translateY(-20vh);
     }
 }
 
