@@ -387,3 +387,135 @@ main{
 #carousel-stage.paused {
     animation-play-state: paused;
 }
+
+/* CALENDLY ////////////////////////////////////////////////////// */
+
+/* Iframe & content basis */
+.calendly-badge-widget iframe,
+.calendly-inline-widget iframe,
+.calendly-overlay iframe {
+    border: 0;
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.calendly-popup-content {
+    height: 100%;
+    position: relative;
+}
+
+.calendly-popup-content.calendly-mobile {
+    overflow-y: auto;
+}
+
+/* Modal Overlay */
+.calendly-overlay {
+    background-color: rgba(0,0,0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    inset: 0;
+    overflow: hidden;
+    position: fixed;
+    z-index: 9999;
+}
+
+.calendly-overlay .calendly-close-overlay {
+    inset: 0;
+    position: absolute;
+}
+
+/* Modal Popup container */
+.calendly-overlay .calendly-popup {
+    box-sizing: border-box;
+    height: 90%;
+    width: calc(100% - 2em);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Mobile */
+/* Was 975px */
+@media (max-width: 649px) {
+    .calendly-overlay .calendly-popup {
+        width: 100%;
+        height: 80vh;
+        top: 20vh;
+        left: 0;
+        transform: none;
+        border-top-left-radius: 1em;
+        border-top-right-radius: 1em;
+        overflow: hidden;
+    }
+}
+
+/* Sluitknop */
+.calendly-overlay .calendly-popup-close {
+    background: url(https://assets.calendly.com/assets/external/close-icon.svg) no-repeat center / contain;
+    cursor: pointer;
+    height: 1.2em;
+    position: absolute;
+    top: 2em;
+    right: 2em;
+    width: 1.2em;
+}
+
+/* Mobile */
+/* Was 975px */
+/* @media (max-width: 649px) {
+    .calendly-overlay .calendly-popup-close {
+        right: 1em;
+        top: 1em;
+    }
+} */
+
+.calendly-badge-widget, .calendly-badge-widget .calendly-badge-content {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+    opacity: 0;
+    display: none;
+}
+
+/* Loader / Spinner */
+.calendly-spinner {
+    inset-inline: 0;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: -1;
+}
+
+.calendly-spinner > div {
+    width: 5em;
+    height: 5em;
+    border-radius: 50%;
+    border: 0.2em solid white;
+    border-top-color: var(--color-accent);
+    animation: loading 1.2s ease-in-out infinite;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+@keyframes loading {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 649px) {
+    .calendly-spinner {
+        transform: translateY(-20vh);
+    }
+}
+
+.calendly-spinner .calendly-bounce1, .calendly-spinner .calendly-bounce2 {
+    display: none;
+}
