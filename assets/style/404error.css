@@ -41,7 +41,7 @@ main img{
     width: 15em;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 999px) {
     main{
         height: 90vh;
         align-items: center;
