@@ -55,23 +55,21 @@ function createMediaElement(file, layout, prefersReducedMotion) {
         mediaElement.muted = true;
         mediaElement.defaultMuted = true;
         mediaElement.playsInline = true;
+        mediaElement.loop = true;
+        mediaElement.controls = false;
+        mediaElement.preload = 'auto';
+
         mediaElement.setAttribute('muted', '');
         mediaElement.setAttribute('playsinline', '');
         mediaElement.setAttribute('webkit-playsinline', '');
-        mediaElement.loop = true;
-        mediaElement.controls = false;
+        mediaElement.setAttribute('disablePictureInPicture', '');
+        mediaElement.setAttribute('disableremoteplayback', '');
 
         mediaElement.src = squareVideoUrl;
-        mediaElement.poster = file.replace('/upload/', '/upload/so_2/').replace(/\.(mp4|webm|mov)$/i, '.jpg');
 
         if (!prefersReducedMotion) {
             mediaElement.autoplay = true;
-            const playPromise = mediaElement.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    console.log("Playback blocked")
-                });
-            }
+            mediaElement.setAttribute('autoplay', '');
         }
     } else {
         mediaElement = document.createElement('img');
@@ -97,6 +95,8 @@ function setupCarousel() {
     const startOffset = -((layout.rings - 1) / 2) * itemSpacing;
     let globalMediaIndex = 0;
 
+    const videoElements = [];
+
     for (let r = 0; r < layout.rings; r++) {
         const ringEl = document.createElement('ul');
         ringEl.className = 'ring';
@@ -115,10 +115,33 @@ function setupCarousel() {
 
             li.appendChild(mediaElement);
             ringEl.appendChild(li);
+
+            if (mediaElement.tagName === 'VIDEO') {
+                videoElements.push(mediaElement);
+            }
         }
         stage.appendChild(ringEl);
     }
     updateGeometry(layout);
+
+    if (!prefersReducedMotion) {
+        startVideosSafely(videoElements);
+    }
+}
+
+function startVideosSafely(videos) {
+    videos.forEach(video => {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                const unlock = () => {
+                    videos.forEach(v => v.play().catch(() => {}));
+                };
+                window.addEventListener('touchstart', unlock, { once: true, passive: true });
+                window.addEventListener('scroll', unlock, { once: true, passive: true });
+            });
+        }
+    });
 }
 
 function updateGeometry(layout) {
