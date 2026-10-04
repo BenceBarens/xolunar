@@ -182,11 +182,14 @@ body {
 }
 
 .ring video::-webkit-media-controls,
+.ring video::-webkit-media-controls-panel,
+.ring video::-webkit-media-controls-play-button,
 .ring video::-webkit-media-controls-start-playback-button,
-.ring video::-webkit-media-controls-play-button {
+.ring video::-webkit-media-controls-overlay-play-button {
     display: none !important;
-    -webkit-appearance: none;
-    opacity: 0;
+    -webkit-appearance: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
