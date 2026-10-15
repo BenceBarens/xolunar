@@ -5,13 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Bence Barens">
 
-    <title>XOLunar</title>
-    <meta name="robots" content="noindex,follow">
-
-    <meta property="og:site_name" content="XOLunar | Admin">
-    <meta property="og:description" content="We are XOLunar, a tight-knit audiovisual studio based in Amsterdam. We partner with musical artists and visionary events to tell compelling stories through sound, motion, and design. In an industry saturated with recycled aesthetics and copied trends, we exist to break the cycle. We deliver refreshing, original audiovisuals that push boundaries, without losing sight of the proven formulas that drive engagement.">
-    <meta property="og:image" content="">
-    <meta property="og:url" content="https://xolunar.com/admin">
+    <title>XOLunar | Admin</title>
+    <meta name="robots" content="noindex,nofollow">
 
     <link rel="stylesheet" href="../assets/style/base.css">
     <link rel="stylesheet" href="../assets/style/admin.css">
@@ -25,7 +20,12 @@
     <div id="auth-state">
         <label for="token-input">GitHub Personal Access Token</label>
         <input type="password" id="token-input" placeholder="github_pat_..." autocomplete="current-password">
-        <button onclick="loginWithToken()" type="button">Login</button>
+
+        <label for="cld-secret-input">Cloudinary API Secret</label>
+        <input type="password" id="cld-secret-input" placeholder="••••••••••••••••••••••••" autocomplete="current-password">
+
+        <button onclick="loginWithCredentials()" type="button">Login</button>
+
         <div id="login-status"></div>
     </div>
 
@@ -51,7 +51,7 @@
                 <button id="upload-btn" onclick="uploadFile()" type="submit">Upload file</button>
             </div>
             <p>Note: make sure to only upload .webp in photo folders and .mp3 in audio folders. When uploading images, try to make them 1950px or smaller.</p>
-            <p>The file names shown on the website aren't the actual file names; they have been slightly modified (file extentions and underscores) for aesthetics. Any duplicate file names will be overwritten.</p>
+            <p>The file names shown on the website aren't the actual file names; they have been slightly modified (file extensions and underscores) for aesthetics. Any duplicate file names will be overwritten.</p>
         </section>
 
         <section class="file-section">
@@ -59,16 +59,21 @@
             <ul id="file-list" class="file-list"></ul>
         </section>
 
-        <section id="video-editor-section" class="is-hidden">
-            <span>Add or remove videos</span>
-            <p>When removing videos, make sure to also delete them from Cloudinary to save space. Folders get generated automatically based on the values in the folder column.</p>
+        <section id="video-upload-section" class="video-control-section is-hidden">
+            <span>Add video to Cloudinary & folder</span>
+            <div class="upload-field">
+                <input type="text" id="video-folder-input" class="video-folder-input" placeholder="Folder (e.g. canvas)" value="canvas">
+                <input type="file" id="cld-file-input" accept="video/mp4,video/webm,video/quicktime">
+                <button type="button" id="cld-upload-btn" onclick="uploadAndSyncVideo()">Upload video</button>
+            </div>
+            <p>Note: make sure to only upload .mp4 files of 1080p or lower and a low framerate. Uploads- and removals have to go through Cloudinary and will take a few minutes to display correctly on both the site and admin panel.</p>
+        </section>
 
-            <div id="video-rows"></div>
-            
-            <div class="video-actions">
-                <button type="button" onclick="addVideoRow()">+ Add video</button>
-                <button type="button" id="save-videos-btn" onclick="saveVideosJson()">Save changes to GitHub</button>
-                <a href="">Reset changes</a>
+        <section id="video-list-section" class="video-control-section is-hidden">
+            <span>Remove video from Cloudinary & folder</span>
+            <p>Note: the folder name is case- and space sensitive. Only videos with the exact same name will be placed in the same folder. Folders are updated as soon as you deselect the text field.</p>
+            <div class="file-section file-section--nested">
+                <ul id="video-file-list" class="file-list"></ul>
             </div>
         </section>
     </div>

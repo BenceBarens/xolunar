@@ -3,6 +3,9 @@ const repoName = 'xolunar';
 const branch = 'main';
 const videosFilePath = 'videos.json';
 
+const cldName = 'tuxorysm';
+const cldKey = '692587191835941';
+
 const statusBox = document.getElementById('status');
 const uploadBtn = document.getElementById('upload-btn');
 const fileListElement = document.getElementById('file-list');
@@ -10,28 +13,33 @@ const loginStatusBox = document.getElementById('login-status');
 
 const authStateSection = document.getElementById('auth-state');
 const dashboardSection = document.getElementById('dashboard');
-const videoEditorSection = document.getElementById('video-editor-section');
-const videoRowsContainer = document.getElementById('video-rows');
-const saveVideosBtn = document.getElementById('save-videos-btn');
 const addingFileSection = document.querySelector('.adding-file');
 const fileSection = document.querySelector('.file-section');
+const videoSections = document.querySelectorAll('.video-control-section');
 
 let currentVideosSha = null;
 
-function getAuthToken() {
-    return sessionStorage.getItem('gh_admin_token');
+// ==========================================
+// AUTHENTICATIE & SESSIE
+// ==========================================
+
+function getAuthCredentials() {
+    return {
+        token: sessionStorage.getItem('gh_admin_token'),
+        cldSecret: sessionStorage.getItem('cld_secret')
+    };
 }
 
-async function verifyAndInit(token) {
+async function verifyAndInit(creds) {
     try {
         const res = await fetch('https://api.github.com/user', {
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${creds.token}`,
                 'Accept': 'application/vnd.github+json'
             }
         });
-        if (!res.ok) throw new Error('Ongeldig token');
-        
+        if (!res.ok) throw new Error('Ongeldige GitHub token');
+
         authStateSection.classList.add('is-hidden');
         dashboardSection.classList.remove('is-hidden');
         loadFiles();
@@ -40,9 +48,16 @@ async function verifyAndInit(token) {
     }
 }
 
-async function loginWithToken() {
+async function loginWithCredentials() {
     const token = document.getElementById('token-input').value.trim();
-    if (!token) return;
+    const cldSecret = document.getElementById('cld-secret-input').value.trim();
+
+    if (!token || !cldSecret) {
+        loginStatusBox.innerText = 'Vul je GitHub PAT én Cloudinary API Secret in.';
+        loginStatusBox.className = 'error';
+        loginStatusBox.style.display = 'block';
+        return;
+    }
 
     loginStatusBox.innerText = 'Verifying...';
     loginStatusBox.className = '';
@@ -55,10 +70,11 @@ async function loginWithToken() {
                 'Accept': 'application/vnd.github+json'
             }
         });
-        if (!res.ok) throw new Error('Token is invalid, expired or has no access.');
-        
+        if (!res.ok) throw new Error('GitHub token is ongeldig of verlopen.');
+
         sessionStorage.setItem('gh_admin_token', token);
-        
+        sessionStorage.setItem('cld_secret', cldSecret);
+
         authStateSection.classList.add('is-hidden');
         dashboardSection.classList.remove('is-hidden');
         loginStatusBox.style.display = 'none';
@@ -72,14 +88,30 @@ async function loginWithToken() {
 
 function logout() {
     sessionStorage.removeItem('gh_admin_token');
+    sessionStorage.removeItem('cld_secret');
+
     authStateSection.classList.remove('is-hidden');
     dashboardSection.classList.add('is-hidden');
-    document.getElementById('token-input').value = '';
 }
 
-const savedToken = getAuthToken();
-if (savedToken) {
-    verifyAndInit(savedToken);
+const savedCreds = getAuthCredentials();
+if (savedCreds.token && savedCreds.cldSecret) {
+    verifyAndInit(savedCreds);
+}
+
+// ==========================================
+// CRYPTO HELPERS (SHA-1 SIGNATURE GENERATOR)
+// ==========================================
+
+async function generateSignature(params, secret) {
+    const sortedKeys = Object.keys(params).sort();
+    const stringToSign = sortedKeys.map(key => `${key}=${params[key]}`).join('&') + secret;
+
+    const encoder = new TextEncoder();
+    const data = encoder.encode(stringToSign);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 // ==========================================
@@ -87,7 +119,7 @@ if (savedToken) {
 // ==========================================
 
 async function loadFiles() {
-    const token = getAuthToken();
+    const { token } = getAuthCredentials();
     if (!token) return;
 
     const selectedFolder = document.querySelector('input[name="folder"]:checked').value;
@@ -95,13 +127,13 @@ async function loadFiles() {
     if (selectedFolder === 'videos_json') {
         addingFileSection.classList.add('is-hidden');
         fileSection.classList.add('is-hidden');
-        videoEditorSection.classList.remove('is-hidden');
+        videoSections.forEach(sec => sec.classList.remove('is-hidden'));
         loadVideosJson();
         return;
     } else {
         addingFileSection.classList.remove('is-hidden');
         fileSection.classList.remove('is-hidden');
-        videoEditorSection.classList.add('is-hidden');
+        videoSections.forEach(sec => sec.classList.add('is-hidden'));
     }
 
     fileListElement.innerHTML = '<li>Loading...</li>';
@@ -145,13 +177,46 @@ async function loadFiles() {
 }
 
 // ==========================================
-// VIDEOS.JSON BEHEREN
+// CLOUDINARY SIGNED DELETE HELPER
+// ==========================================
+
+async function deleteVideoFromCloudinary(url) {
+    const { cldSecret } = getAuthCredentials();
+    if (!url || !cldSecret) return;
+
+    const parts = url.split('/');
+    const fileNameWithExt = parts.pop();
+    const publicId = fileNameWithExt.split('.')[0];
+
+    const timestamp = Math.floor(Date.now() / 1000);
+    const params = { public_id: publicId, timestamp: timestamp };
+
+    try {
+        const signature = await generateSignature(params, cldSecret);
+
+        const formData = new FormData();
+        formData.append('public_id', publicId);
+        formData.append('api_key', cldKey);
+        formData.append('timestamp', timestamp);
+        formData.append('signature', signature);
+
+        await fetch(`https://api.cloudinary.com/v1_1/${cldName}/video/destroy`, {
+            method: 'POST',
+            body: formData
+        });
+    } catch (err) {
+        console.error('Kon video niet automatisch wissen van Cloudinary:', err);
+    }
+}
+
+// ==========================================
+// GEAUTOMATISEERD VIDEO BEHEER (VIDEOS.JSON)
 // ==========================================
 
 async function loadVideosJson() {
-    const token = getAuthToken();
-    videoRowsContainer.innerHTML = '<p>Loading videos.json from GitHub...</p>';
-    showStatus('', '');
+    const { token } = getAuthCredentials();
+    const videoListElement = document.getElementById('video-file-list');
+    videoListElement.innerHTML = '<li>Loading videos.json...</li>';
 
     try {
         const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}?ref=${branch}`, {
@@ -169,104 +234,202 @@ async function loadVideosJson() {
         const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
         const videoList = JSON.parse(jsonString || '[]');
 
-        renderVideoRows(videoList);
+        renderVideoList(videoList);
     } catch (err) {
-        videoRowsContainer.innerHTML = `<p class="error">Error loading videos.json: ${err.message}</p>`;
+        videoListElement.innerHTML = `<li class="empty-msg">Error loading: ${err.message}</li>`;
     }
 }
 
-function renderVideoRows(videos) {
-    videoRowsContainer.innerHTML = '';
+function renderVideoList(videos) {
+    const videoListElement = document.getElementById('video-file-list');
+    videoListElement.innerHTML = '';
 
     if (!videos || videos.length === 0) {
-        addVideoRow();
+        videoListElement.innerHTML = '<li class="empty-msg">No videos found.</li>';
         return;
     }
 
-    videos.forEach(video => {
-        addVideoRow(video.folder || 'canvas', video.url || '');
+    videos.forEach((video, index) => {
+        const fileName = video.url.split('/').pop();
+
+        const li = document.createElement('li');
+        li.className = 'file-item';
+        li.innerHTML = `
+            <input type="text" class="video-folder-edit" value="${video.folder || 'canvas'}" onchange="updateVideoFolder(${index}, this.value)" title="Edit folder name">
+            <span class="file-name">${fileName}</span>
+            <button class="btn-delete" onclick="deleteVideoItem(${index})">Delete</button>
+        `;
+        videoListElement.appendChild(li);
     });
 }
 
-function addVideoRow(folder = '', url = '') {
-    const row = document.createElement('div');
-    row.className = 'video-row';
+async function updateVideoFolder(index, newFolder) {
+    const { token } = getAuthCredentials();
+    const cleanFolder = newFolder.trim() || 'canvas';
 
-    const formattedUrl = formatCloudinaryUrl(url);
-
-    row.innerHTML = `
-        <input type="text" class="video-folder-input" placeholder="Folder" value="${folder}">
-        <input type="text" class="video-url-input" placeholder="Cloudinary URL" value="${formattedUrl}">
-        <button type="button" class="btn-delete" onclick="this.parentElement.remove()">Remove</button>
-    `;
-
-    const urlInput = row.querySelector('.video-url-input');
-    urlInput.addEventListener('change', () => {
-        urlInput.value = formatCloudinaryUrl(urlInput.value);
-    });
-
-    videoRowsContainer.appendChild(row);
-}
-
-async function saveVideosJson() {
-    const token = getAuthToken();
-    if (!token) return;
-
-    const rows = videoRowsContainer.querySelectorAll('.video-row');
-    const updatedVideos = [];
-
-    rows.forEach(row => {
-        const folder = row.querySelector('.video-folder-input').value.trim();
-        const rawUrl = row.querySelector('.video-url-input').value.trim();
-        if (rawUrl) {
-            updatedVideos.push({
-                folder: folder || 'overig',
-                url: formatCloudinaryUrl(rawUrl)
-            });
-        }
-    });
-
-    if (saveVideosBtn) saveVideosBtn.disabled = true;
-    showStatus('Saving videos.json to GitHub...', '');
+    showStatus('Updating folder name on GitHub...', '');
 
     try {
-        const jsonContent = JSON.stringify(updatedVideos, null, 2);
-        const base64Content = btoa(unescape(encodeURIComponent(jsonContent)));
+        const jsonRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}?ref=${branch}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
 
-        const bodyData = {
-            message: `CONTENT: update videos.json (${updatedVideos.length} videos)`,
-            content: base64Content,
-            branch: branch
-        };
+        if (!jsonRes.ok) throw new Error('Could not fetch videos.json');
 
-        if (currentVideosSha) {
-            bodyData.sha = currentVideosSha;
+        const fileData = await jsonRes.json();
+        currentVideosSha = fileData.sha;
+        const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
+        let videoList = JSON.parse(jsonString || '[]');
+
+        if (videoList[index]) {
+            videoList[index].folder = cleanFolder;
         }
 
-        const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/vnd.github+json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bodyData)
+        await saveVideosJsonData(videoList);
+        showStatus('Folder name updated successfully!', 'success');
+    } catch (err) {
+        showStatus(`Error updating folder: ${err.message}`, 'error');
+        loadVideosJson();
+    }
+}
+
+async function uploadAndSyncVideo() {
+    const { token, cldSecret } = getAuthCredentials();
+    const fileInput = document.getElementById('cld-file-input');
+    const folderInput = document.getElementById('video-folder-input');
+    const uploadBtn = document.getElementById('cld-upload-btn');
+
+    if (!fileInput.files.length) {
+        showStatus('Selecteer eerst een videobestand.', 'error');
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const folderName = folderInput.value.trim() || 'canvas';
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    const params = { timestamp: timestamp };
+    const signature = await generateSignature(params, cldSecret);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('api_key', cldKey);
+    formData.append('timestamp', timestamp);
+    formData.append('signature', signature);
+
+    uploadBtn.disabled = true;
+    showStatus(`Uploading "${file.name}" to Cloudinary...`, '');
+
+    try {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cldName}/video/upload`, {
+            method: 'POST',
+            body: formData
         });
 
         if (!res.ok) {
             const errData = await res.json();
-            throw new Error(errData.message || 'Error updating videos.json');
+            throw new Error(errData.error?.message || 'Cloudinary upload failed.');
         }
 
-        const resultData = await res.json();
-        currentVideosSha = resultData.content.sha;
+        const data = await res.json();
+        const formattedUrl = formatCloudinaryUrl(data.secure_url);
 
-        showStatus('videos.json updated and committed successfully!', 'success');
+        showStatus(`Video geüpload! 'videos.json' bijwerken op GitHub...`, '');
+        const jsonRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}?ref=${branch}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+        
+        let videoList = [];
+        if (jsonRes.ok) {
+            const fileData = await jsonRes.json();
+            currentVideosSha = fileData.sha;
+            const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
+            videoList = JSON.parse(jsonString || '[]');
+        }
+
+        videoList.push({
+            folder: folderName,
+            url: formattedUrl
+        });
+
+        await saveVideosJsonData(videoList);
+
+        showStatus(`Video "${file.name}" succesvol geüpload en opgeslagen in videos.json!`, 'success');
+        fileInput.value = '';
+        loadVideosJson();
     } catch (err) {
-        showStatus(`Error saving: ${err.message}`, 'error');
+        showStatus(`Fout: ${err.message}`, 'error');
     } finally {
-        if (saveVideosBtn) saveVideosBtn.disabled = false;
+        uploadBtn.disabled = false;
     }
+}
+
+async function deleteVideoItem(index) {
+    const { token } = getAuthCredentials();
+    
+    const jsonRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}?ref=${branch}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+
+    if (!jsonRes.ok) {
+        showStatus('Kon videos.json niet ophalen om te verwijderen.', 'error');
+        return;
+    }
+
+    const fileData = await jsonRes.json();
+    currentVideosSha = fileData.sha;
+    const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
+    let videoList = JSON.parse(jsonString || '[]');
+
+    const targetVideo = videoList[index];
+    if (!targetVideo) return;
+
+    if (!confirm(`Weet je zeker dat je "${targetVideo.url.split('/').pop()}" wilt verwijderen uit videos.json én Cloudinary?`)) return;
+
+    showStatus('Video verwijderen...', '');
+
+    try {
+        await deleteVideoFromCloudinary(targetVideo.url);
+        videoList.splice(index, 1);
+        await saveVideosJsonData(videoList);
+
+        showStatus('Video succesvol verwijderd uit videos.json en Cloudinary!', 'success');
+        loadVideosJson();
+    } catch (err) {
+        showStatus(`Fout bij verwijderen: ${err.message}`, 'error');
+    }
+}
+
+async function saveVideosJsonData(videoArray) {
+    const { token } = getAuthCredentials();
+    const jsonContent = JSON.stringify(videoArray, null, 2);
+    const base64Content = btoa(unescape(encodeURIComponent(jsonContent)));
+
+    const bodyData = {
+        message: `CONTENT: update videos.json (${videoArray.length} videos)`,
+        content: base64Content,
+        branch: branch
+    };
+
+    if (currentVideosSha) bodyData.sha = currentVideosSha;
+
+    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
+    });
+
+    if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Fout bij opslaan van videos.json');
+    }
+
+    const resultData = await res.json();
+    currentVideosSha = resultData.content.sha;
 }
 
 function formatCloudinaryUrl(url) {
@@ -291,11 +454,11 @@ function formatCloudinaryUrl(url) {
 }
 
 // ==========================================
-// REGULIERE UPLOAD & DELETE
+// REGULIERE UPLOAD & DELETE (GITHUB)
 // ==========================================
 
 async function uploadFile() {
-    const token = getAuthToken();
+    const { token } = getAuthCredentials();
     const fileInput = document.getElementById('file');
     const folder = document.querySelector('input[name="folder"]:checked').value;
 
@@ -332,7 +495,7 @@ async function uploadFile() {
             throw new Error(errData.message || 'Error uploading');
         }
 
-        showStatus(`"${file.name}" uploaded successfully (may take few minutes to appear on website and admin panel, cookies may play a role).`, 'success');
+        showStatus(`"${file.name}" uploaded successfully.`, 'success');
         fileInput.value = '';
         loadFiles();
     } catch (err) {
@@ -345,7 +508,7 @@ async function uploadFile() {
 async function deleteFile(fileName, sha) {
     if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
 
-    const token = getAuthToken();
+    const { token } = getAuthCredentials();
     const folder = document.querySelector('input[name="folder"]:checked').value;
     const filePath = `${folder}/${fileName}`;
 
@@ -371,7 +534,7 @@ async function deleteFile(fileName, sha) {
             throw new Error(errData.message || 'Error deleting');
         }
 
-        showStatus(`"${fileName}" deleted successfully (may take a few minutes to dissappear from website and admin panel, cookies may play a role).`, 'success');
+        showStatus(`"${fileName}" deleted successfully.`, 'success');
         loadFiles();
     } catch (err) {
         showStatus(`Error deleting ${err.message}`, 'error');

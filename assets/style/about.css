@@ -265,11 +265,14 @@ h1 {
     animation-timeline: scroll(root);
 }
 
-@keyframes camera-parallax {
-    0% {
-        transform: rotateX(0) rotateY(0) translateY(0);
-    }
-    100% {
-        transform: rotateX(-10deg) rotateY(10deg) translateY(-10em);
+
+@media (prefers-reduced-motion: no-preference) {
+    @keyframes camera-parallax {
+        0% {
+            transform: rotateX(0) rotateY(0) translateY(0);
+        }
+        100% {
+            transform: rotateX(-5deg) rotateY(20deg) translateY(-5em);
+        }
     }
 }

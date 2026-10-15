@@ -35,6 +35,7 @@ button {
     padding: 0.5em 1em;
     font-size: 1em;
     cursor: pointer;
+    border: none;
 }
 
 button:disabled {
@@ -62,6 +63,7 @@ fieldset label:has(input:checked) {
 }
 
 #token-input,
+#cld-secret-input,
 #auth-state {
     margin: 1em 0;
 }
@@ -90,8 +92,9 @@ fieldset label:has(input:checked) {
     gap: 0.5em;
 }
 
-#upload-btn{
-    width: 8em;
+#upload-btn, 
+#cld-upload-btn {
+    width: 12em;
 }
 
 .file-list {
@@ -103,6 +106,7 @@ fieldset label:has(input:checked) {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.5em;
     padding: 0.5em 0;
     margin: auto;
     border-bottom: 0.1em solid var(--color-secondary);
@@ -114,30 +118,23 @@ fieldset label:has(input:checked) {
 
 .file-name {
     word-break: break-all;
-    margin-right: 2em;
-}
-
-#video-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-}
-
-.video-row {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .video-folder-input {
-    width: 9em;
+    width: 10em;
 }
 
-.video-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+.video-folder-edit {
+    width: 7em;
+    padding: 0.2em 0.4em;
+}
+
+.file-section--nested {
+    margin-top: 0;
+    border-top: none;
 }
 
 .is-hidden {
