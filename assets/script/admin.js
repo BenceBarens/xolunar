@@ -53,7 +53,7 @@ async function loginWithCredentials() {
     const cldSecret = document.getElementById('cld-secret-input').value.trim();
 
     if (!token || !cldSecret) {
-        loginStatusBox.innerText = 'Vul je GitHub PAT én Cloudinary API Secret in.';
+        loginStatusBox.innerText = 'Please enter GitHub PAT and Cloudinary API.';
         loginStatusBox.className = 'error';
         loginStatusBox.style.display = 'block';
         return;
@@ -70,7 +70,7 @@ async function loginWithCredentials() {
                 'Accept': 'application/vnd.github+json'
             }
         });
-        if (!res.ok) throw new Error('GitHub token is ongeldig of verlopen.');
+        if (!res.ok) throw new Error('GitHub token is invalid or expired.');
 
         sessionStorage.setItem('gh_admin_token', token);
         sessionStorage.setItem('cld_secret', cldSecret);
@@ -186,9 +186,8 @@ async function deleteVideoFromCloudinary(url) {
 
     try {
         const uploadIndex = url.indexOf('/upload/');
-        if (uploadIndex === -1) throw new Error('Geen geldige Cloudinary URL.');
+        if (uploadIndex === -1) throw new Error('Not a valid Cloudinary URL.');
 
-        // Pak alles na '/upload/'
         let pathAfterUpload = url.substring(uploadIndex + 8);
 
         const pathSegments = pathAfterUpload.split('/').filter(segment => {
@@ -199,8 +198,6 @@ async function deleteVideoFromCloudinary(url) {
         
         const lastDotIndex = fullPath.lastIndexOf('.');
         const publicId = lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath;
-
-        console.log(`Cloudinary video verwijderen met Public ID: "${publicId}"`);
 
         const timestamp = Math.floor(Date.now() / 1000);
         
@@ -225,11 +222,9 @@ async function deleteVideoFromCloudinary(url) {
         const data = await res.json();
         if (data.result !== 'ok') {
             console.warn('Cloudinary destroy response:', data);
-        } else {
-            console.log('Video succesvol gewist op Cloudinary!');
         }
     } catch (err) {
-        console.error('Fout bij verwijderen van Cloudinary:', err);
+        console.error('Error during Cloudinary deletion:', err);
     }
 }
 
@@ -389,7 +384,7 @@ async function uploadAndSyncVideo() {
 
         await saveVideosJsonData(videoList);
 
-        showStatus(`Video "${file.name}" succesvol geüpload en opgeslagen in videos.json!`, 'success');
+        showStatus(`Video "${file.name}" uploaded and saved in videos.json`, 'success');
         fileInput.value = '';
         loadVideosJson();
     } catch (err) {
@@ -419,19 +414,19 @@ async function deleteVideoItem(index) {
     const targetVideo = videoList[index];
     if (!targetVideo) return;
 
-    if (!confirm(`Weet je zeker dat je "${targetVideo.url.split('/').pop()}" wilt verwijderen uit videos.json én Cloudinary?`)) return;
+    if (!confirm(`Are you sure that you want to delete "${targetVideo.url.split('/').pop()}" from videos.json and Cloudinary?`)) return;
 
-    showStatus('Video verwijderen...', '');
+    showStatus('Deleting video...', '');
 
     try {
         await deleteVideoFromCloudinary(targetVideo.url);
         videoList.splice(index, 1);
         await saveVideosJsonData(videoList);
 
-        showStatus('Video succesvol verwijderd uit videos.json en Cloudinary!', 'success');
+        showStatus('Video deleted from videos.json and Cloudinary', 'success');
         loadVideosJson();
     } catch (err) {
-        showStatus(`Fout bij verwijderen: ${err.message}`, 'error');
+        showStatus(`Error: ${err.message}`, 'error');
     }
 }
 
@@ -460,7 +455,7 @@ async function saveVideosJsonData(videoArray) {
 
     if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.message || 'Fout bij opslaan van videos.json');
+        throw new Error(errData.message || 'Error while saving videos.json');
     }
 
     const resultData = await res.json();
