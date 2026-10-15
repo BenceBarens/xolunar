@@ -332,13 +332,24 @@ async function uploadAndSyncVideo() {
     const folderName = folderInput.value.trim() || 'canvas';
     const timestamp = Math.floor(Date.now() / 1000);
 
-    const params = { timestamp: timestamp };
+    const originalFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+
+    const params = {
+        public_id: originalFileName,
+        timestamp: timestamp,
+        unique_filename: 'false',
+        use_filename: 'true'
+    };
+
     const signature = await generateSignature(params, cldSecret);
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('api_key', cldKey);
+    formData.append('public_id', originalFileName);
     formData.append('timestamp', timestamp);
+    formData.append('use_filename', 'true');
+    formData.append('unique_filename', 'false');
     formData.append('signature', signature);
 
     uploadBtn.disabled = true;
