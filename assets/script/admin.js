@@ -184,14 +184,31 @@ async function deleteVideoFromCloudinary(url) {
     const { cldSecret } = getAuthCredentials();
     if (!url || !cldSecret) return;
 
-    const parts = url.split('/');
-    const fileNameWithExt = parts.pop();
-    const publicId = fileNameWithExt.split('.')[0];
-
-    const timestamp = Math.floor(Date.now() / 1000);
-    const params = { public_id: publicId, timestamp: timestamp };
-
     try {
+        const uploadIndex = url.indexOf('/upload/');
+        if (uploadIndex === -1) throw new Error('Geen geldige Cloudinary URL.');
+
+        // Pak alles na '/upload/'
+        let pathAfterUpload = url.substring(uploadIndex + 8);
+
+        const pathSegments = pathAfterUpload.split('/').filter(segment => {
+            return !segment.includes(',') && !/^v\d+$/.test(segment);
+        });
+
+        const fullPath = pathSegments.join('/');
+        
+        const lastDotIndex = fullPath.lastIndexOf('.');
+        const publicId = lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath;
+
+        console.log(`Cloudinary video verwijderen met Public ID: "${publicId}"`);
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        
+        const params = { 
+            public_id: publicId, 
+            timestamp: timestamp 
+        };
+
         const signature = await generateSignature(params, cldSecret);
 
         const formData = new FormData();
@@ -200,12 +217,19 @@ async function deleteVideoFromCloudinary(url) {
         formData.append('timestamp', timestamp);
         formData.append('signature', signature);
 
-        await fetch(`https://api.cloudinary.com/v1_1/${cldName}/video/destroy`, {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cldName}/video/destroy`, {
             method: 'POST',
             body: formData
         });
+
+        const data = await res.json();
+        if (data.result !== 'ok') {
+            console.warn('Cloudinary destroy response:', data);
+        } else {
+            console.log('Video succesvol gewist op Cloudinary!');
+        }
     } catch (err) {
-        console.error('Kon video niet automatisch wissen van Cloudinary:', err);
+        console.error('Fout bij verwijderen van Cloudinary:', err);
     }
 }
 
