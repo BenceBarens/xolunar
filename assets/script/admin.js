@@ -319,7 +319,7 @@ async function uploadAndSyncVideo() {
     const uploadBtn = document.getElementById('cld-upload-btn');
 
     if (!fileInput.files.length) {
-        showStatus('Please upload a video. Site deploy has been started and will be completed in a few minutes.', 'error');
+        showStatus('Please upload a video.', 'error');
         return;
     }
 
