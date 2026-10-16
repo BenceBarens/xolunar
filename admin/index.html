@@ -19,10 +19,10 @@
 
     <div id="auth-state">
         <label for="token-input">GitHub Personal Access Token</label>
-        <input type="password" id="token-input" placeholder="github_pat_..." autocomplete="current-password">
+        <input type="password" id="token-input" placeholder="github_pat_123" autocomplete="current-password">
 
         <label for="cld-secret-input">Cloudinary API Secret</label>
-        <input type="password" id="cld-secret-input" placeholder="••••••••••••••••••••••••" autocomplete="current-password">
+        <input type="password" id="cld-secret-input" placeholder="123ABC" autocomplete="username">
 
         <button onclick="loginWithCredentials()" type="button">Login</button>
 
@@ -30,7 +30,7 @@
     </div>
 
     <div id="dashboard" class="is-hidden">
-        <p><a href="#" onclick="logout()">Log out</a></p>
+        <a href="#" onclick="logout()">Log out</a><br><br>
 
         <div id="status"></div>
 
@@ -60,9 +60,9 @@
         </section>
 
         <section id="video-upload-section" class="video-control-section is-hidden">
-            <span>Add video to Cloudinary & folder</span>
+            <span>Upload new video</span>
             <div class="upload-field">
-                <input type="text" id="video-folder-input" class="video-folder-input" placeholder="Folder (e.g. canvas)" value="canvas">
+                <input type="text" id="video-folder-input" class="video-folder-input" placeholder="Folder">
                 <input type="file" id="cld-file-input" accept="video/mp4,video/webm,video/quicktime">
                 <button type="button" id="cld-upload-btn" onclick="uploadAndSyncVideo()">Upload video</button>
             </div>
@@ -70,8 +70,8 @@
         </section>
 
         <section id="video-list-section" class="video-control-section is-hidden">
-            <span>Remove video from Cloudinary & folder</span>
-            <p>Note: the folder name is case- and space sensitive. Only videos with the exact same name will be placed in the same folder. Folders are updated as soon as you deselect the text field.</p>
+            <span>Remove videos or edit folders</span>
+            <p>Note: the folder name is case- and space sensitive. Only videos with the exact same folder name will be placed in the same folder. Folders are updated as soon as you deselect the text field.</p>
             <div class="file-section file-section--nested">
                 <ul id="video-file-list" class="file-list"></ul>
             </div>
