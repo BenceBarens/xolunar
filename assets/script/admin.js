@@ -38,7 +38,7 @@ async function verifyAndInit(creds) {
                 'Accept': 'application/vnd.github+json'
             }
         });
-        if (!res.ok) throw new Error('Ongeldige GitHub token');
+        if (!res.ok) throw new Error('GitHub token invalid.');
 
         authStateSection.classList.add('is-hidden');
         dashboardSection.classList.remove('is-hidden');
@@ -53,13 +53,13 @@ async function loginWithCredentials() {
     const cldSecret = document.getElementById('cld-secret-input').value.trim();
 
     if (!token || !cldSecret) {
-        loginStatusBox.innerText = 'Please enter GitHub PAT and Cloudinary API.';
+        loginStatusBox.innerText = 'Please enter both codes';
         loginStatusBox.className = 'error';
         loginStatusBox.style.display = 'block';
         return;
     }
 
-    loginStatusBox.innerText = 'Verifying...';
+    loginStatusBox.innerText = 'Verifying GitHub token...';
     loginStatusBox.className = '';
     loginStatusBox.style.display = 'block';
 
@@ -274,7 +274,7 @@ function renderVideoList(videos) {
         const li = document.createElement('li');
         li.className = 'file-item';
         li.innerHTML = `
-            <input type="text" class="video-folder-edit" value="${video.folder || 'canvas'}" onchange="updateVideoFolder(${index}, this.value)" title="Edit folder name">
+            <input type="text" class="video-folder-edit" value="${video.folder || 'Spotify canvases'}" onchange="updateVideoFolder(${index}, this.value)" title="Edit folder name">
             <span class="file-name">${fileName}</span>
             <button class="btn-delete" onclick="deleteVideoItem(${index})">Delete</button>
         `;
@@ -284,7 +284,7 @@ function renderVideoList(videos) {
 
 async function updateVideoFolder(index, newFolder) {
     const { token } = getAuthCredentials();
-    const cleanFolder = newFolder.trim() || 'canvas';
+    const cleanFolder = newFolder.trim() || 'Spotify canvases';
 
     showStatus('Updating folder name on GitHub...', '');
 
@@ -305,7 +305,7 @@ async function updateVideoFolder(index, newFolder) {
         }
 
         await saveVideosJsonData(videoList);
-        showStatus('Folder name updated successfully!', 'success');
+        showStatus('Folder name updated successfully. Site deploy has been started and will be completed in a few minutes.', 'success');
     } catch (err) {
         showStatus(`Error updating folder: ${err.message}`, 'error');
         loadVideosJson();
@@ -319,12 +319,12 @@ async function uploadAndSyncVideo() {
     const uploadBtn = document.getElementById('cld-upload-btn');
 
     if (!fileInput.files.length) {
-        showStatus('Selecteer eerst een videobestand.', 'error');
+        showStatus('Please upload a video. Site deploy has been started and will be completed in a few minutes.', 'error');
         return;
     }
 
     const file = fileInput.files[0];
-    const folderName = folderInput.value.trim() || 'canvas';
+    const folderName = folderInput.value.trim() || 'Spotify canvases';
     const timestamp = Math.floor(Date.now() / 1000);
 
     const originalFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
@@ -364,7 +364,7 @@ async function uploadAndSyncVideo() {
         const data = await res.json();
         const formattedUrl = formatCloudinaryUrl(data.secure_url);
 
-        showStatus(`Video geüpload! 'videos.json' bijwerken op GitHub...`, '');
+        showStatus(`Video uploaded to Cloudinary, adding to GitHub...`, '');
         const jsonRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videosFilePath}?ref=${branch}`, {
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
         });
@@ -384,11 +384,11 @@ async function uploadAndSyncVideo() {
 
         await saveVideosJsonData(videoList);
 
-        showStatus(`Video "${file.name}" uploaded and saved in videos.json`, 'success');
+        showStatus(`Video "${file.name}" uploaded and saved. Site deploy has been started and will be completed in a few minutes.`, 'success');
         fileInput.value = '';
         loadVideosJson();
     } catch (err) {
-        showStatus(`Fout: ${err.message}`, 'error');
+        showStatus(`Error: ${err.message}`, 'error');
     } finally {
         uploadBtn.disabled = false;
     }
@@ -402,7 +402,7 @@ async function deleteVideoItem(index) {
     });
 
     if (!jsonRes.ok) {
-        showStatus('Kon videos.json niet ophalen om te verwijderen.', 'error');
+        showStatus("Couldn't retrieve videos.json.", 'error');
         return;
     }
 
@@ -414,7 +414,7 @@ async function deleteVideoItem(index) {
     const targetVideo = videoList[index];
     if (!targetVideo) return;
 
-    if (!confirm(`Are you sure that you want to delete "${targetVideo.url.split('/').pop()}" from videos.json and Cloudinary?`)) return;
+    if (!confirm(`Are you sure that you want to delete "${targetVideo.url.split('/').pop()}" from GitHub and Cloudinary?`)) return;
 
     showStatus('Deleting video...', '');
 
@@ -423,7 +423,7 @@ async function deleteVideoItem(index) {
         videoList.splice(index, 1);
         await saveVideosJsonData(videoList);
 
-        showStatus('Video deleted from videos.json and Cloudinary', 'success');
+        showStatus('Video deleted from GitHub and Cloudinary. Site deploy has been started and will be completed in a few minutes.', 'success');
         loadVideosJson();
     } catch (err) {
         showStatus(`Error: ${err.message}`, 'error');
@@ -493,7 +493,7 @@ async function uploadFile() {
     const folder = document.querySelector('input[name="folder"]:checked').value;
 
     if (!fileInput.files.length) {
-        showStatus('Choose a file', 'error');
+        showStatus('Please upload a file.', 'error');
         return;
     }
 
@@ -525,11 +525,11 @@ async function uploadFile() {
             throw new Error(errData.message || 'Error uploading');
         }
 
-        showStatus(`"${file.name}" uploaded successfully.`, 'success');
+        showStatus(`"${file.name}" uploaded successfully. Site deploy has been started and will be completed in a few minutes.`, 'success');
         fileInput.value = '';
         loadFiles();
     } catch (err) {
-        showStatus(`Fout: ${err.message}`, 'error');
+        showStatus(`Error: ${err.message}`, 'error');
     } finally {
         uploadBtn.disabled = false;
     }
@@ -542,7 +542,7 @@ async function deleteFile(fileName, sha) {
     const folder = document.querySelector('input[name="folder"]:checked').value;
     const filePath = `${folder}/${fileName}`;
 
-    showStatus(`"${fileName}" deleting...`, '');
+    showStatus(`"${fileName}" deleting file from GitHub...`, '');
 
     try {
         const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${encodeURIComponent(filePath)}`, {
@@ -564,10 +564,10 @@ async function deleteFile(fileName, sha) {
             throw new Error(errData.message || 'Error deleting');
         }
 
-        showStatus(`"${fileName}" deleted successfully.`, 'success');
+        showStatus(`"${fileName}" deleted successfully. Site deploy has been started and will be completed in a few minutes.`, 'success');
         loadFiles();
     } catch (err) {
-        showStatus(`Error deleting ${err.message}`, 'error');
+        showStatus(`Error deleting ${err.message}: `, 'error');
     }
 }
 

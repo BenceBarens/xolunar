@@ -18,6 +18,10 @@ section > label {
     text-align: center;
 }
 
+p{
+    margin: 1em auto;
+}
+
 select,
 input {
     background-color: var(--color-primary);
@@ -74,17 +78,27 @@ fieldset label:has(input:checked) {
     padding: 1em;
     display: none;
     background: #fdedd9;
+    border: 0.1em solid #5c3d0f;
     color: #5c3d0f;
+}
+
+#status{
+    position: fixed;
+    right: 1em;
+    bottom: 1em;
+    max-width: 20em;
 }
 
 .success {
     background: #e6f4ea !important;
     color: #137333 !important;
+    border-color: #137333 !important;
 }
 
 .error {
     background: #fce8e6 !important;
     color: #c5221f !important;
+    border-color: #c5221f !important;
 }
 
 .upload-field {
